@@ -1,0 +1,23 @@
+{
+  "name": "decifra-me",
+  "version": "1.0.0",
+  "description": "A javascript implementation of a puzzle game.",
+  "source": "src/index.html",
+  "scripts": {
+    "dev": "parcel",
+    "build": "parcel build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tchesa/decifra-me-js.git"
+  },
+  "author": "tchesa",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tchesa/decifra-me-js/issues"
+  },
+  "homepage": "https://github.com/tchesa/decifra-me-js#readme",
+  "dependencies": {
+    "parcel": "^2.8.3"
+  }
+}
