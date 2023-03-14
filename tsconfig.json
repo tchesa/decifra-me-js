@@ -1,0 +1,10 @@
+{
+  "include": [
+    "./src/js/index.ts",
+    "./src/index.d.ts"
+  ],
+  "compilerOptions": {
+    "lib": ["es5", "es6", "dom"],
+    "strict": true
+  }
+}

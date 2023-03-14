@@ -18,6 +18,12 @@
   },
   "homepage": "https://github.com/tchesa/decifra-me-js#readme",
   "dependencies": {
-    "parcel": "^2.8.3"
+    "dat.gui": "^0.7.9",
+    "parcel": "^2.8.3",
+    "three": "^0.150.1"
+  },
+  "devDependencies": {
+    "@types/dat.gui": "^0.7.7",
+    "@types/three": "^0.149.0"
   }
 }
