@@ -16,6 +16,8 @@ export type BlockPortDivision =
 
 export type BlockColor = "BLUE" | "GREEN" | "ORANGE" | "PURPLE" | "YELLOW";
 
+export const BLOCK_MESH_NAME = "Block";
+
 export type BlockOptions = {
   division: BlockPortDivision;
   isStatic?: boolean;
@@ -43,10 +45,11 @@ export default class Block {
     const planeGeometry = new PlaneGeometry();
     const planeMaterial = new MeshBasicMaterial({
       color: "red",
-      wireframe: true,
+      // wireframe: true,
       // map: textureLoader.load(arrow),
     });
     const plane = new Mesh(planeGeometry, planeMaterial);
+    plane.name = BLOCK_MESH_NAME;
     plane.scale.set(1 / GRID_SIZE, 1 / GRID_SIZE, 1);
     plane.position.set(
       (-1.5 + setup.column) / GRID_SIZE,
