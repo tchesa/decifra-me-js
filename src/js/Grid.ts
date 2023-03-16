@@ -1,6 +1,6 @@
 import { Mesh, MeshBasicMaterial, PlaneGeometry, TextureLoader } from "three";
 import Block, { BlockOptions, BlockSetup } from "./Block";
-import { CubeFace } from "./Cube";
+import Cube, { CubeFace } from "./Cube";
 import arrow from "../textures/arrow.webp";
 
 export const GRID_SIZE = 4;
@@ -34,13 +34,14 @@ export type FixedGrid<T> = [
 export type GridSetup = {
   grid: FixedGrid<BlockOptions>;
   face: CubeFace;
-  parent: Mesh;
+  cube: Cube;
 };
 
 export default class Grid {
-  private blockGrid: FixedGrid<Block>;
+  blockGrid: FixedGrid<Block>;
   private face: CubeFace;
   mesh: Mesh;
+  cube: Cube;
 
   constructor(setup: GridSetup) {
     this.face = setup.face;
@@ -57,7 +58,8 @@ export default class Grid {
     plane.rotation.set(...rotationByCubeFace[setup.face]);
     // plane.parent = setup.parent;
     // setup.parent.children.push(plane);
-    setup.parent.add(plane);
+    setup.cube.mesh.add(plane);
+    this.cube = setup.cube;
     this.mesh = plane;
 
     this.blockGrid = [
@@ -76,12 +78,10 @@ export default class Grid {
             ...blockSetup,
             row: i,
             column: j,
-            parent: plane,
+            grid: this,
           });
         }
       }
     }
-
-    // window.scene.add(plane);
   }
 }

@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as dat from "dat.gui";
 import Cube from "./Cube";
-import { BLOCK_MESH_NAME } from "./Block";
+import Block, { BLOCK_MESH_NAME } from "./Block";
 import { GRID_SIZE } from "./Grid";
 import { getGlobalUp } from "./utils";
 import { clamp } from "three/src/math/MathUtils";
@@ -57,7 +57,7 @@ window.scene.add(directionalLight);
 // box.scale.set(4, 4, 4);
 const cube = new Cube({
   FRONT: [
-    [undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, { division: "LEFT_RIGHT" }],
     [undefined, undefined, undefined, undefined],
     [
       { division: "LEFT_RIGHT" },
@@ -160,9 +160,12 @@ window.addEventListener("mousemove", function (e) {
         Math.abs(draggingInitialPosition.x - pointerLocalPosition.x) >
         Math.abs(draggingInitialPosition.y - pointerLocalPosition.y);
 
+      const movementBoundaries =
+        Block.map[dragging.uuid].getMovementBoundaries();
+
       const limitedPosition = new THREE.Vector3(
-        clamp(pointerLocalPosition.x, -1.5 / GRID_SIZE, 1.5 / GRID_SIZE),
-        clamp(pointerLocalPosition.y, -1.5 / GRID_SIZE, 1.5 / GRID_SIZE),
+        clamp(pointerLocalPosition.x, ...movementBoundaries.x),
+        clamp(pointerLocalPosition.y, ...movementBoundaries.y),
         pointerLocalPosition.z
       );
 

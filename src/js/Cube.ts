@@ -35,7 +35,11 @@ export default class Cube {
       const faceSetup = setup[face];
 
       if (faceSetup) {
-        const grid = new Grid({ grid: faceSetup, face, parent: this.mesh });
+        const grid = new Grid({
+          grid: faceSetup,
+          face,
+          cube: this,
+        });
         this.grids[face] = grid;
         // this.mesh.children.push(grid.mesh);
         // grid.mesh.parent = this.mesh;

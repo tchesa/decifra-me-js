@@ -1,5 +1,5 @@
 import { Mesh, MeshBasicMaterial, PlaneGeometry } from "three";
-import { GRID_SIZE } from "./Grid";
+import Grid, { GRID_SIZE } from "./Grid";
 
 export type BlockPortDivision =
   | "TOP_BOT"
@@ -26,9 +26,9 @@ export type BlockOptions = {
 };
 
 export type BlockSetup = BlockOptions & {
-  parent: Mesh;
   row: number;
   column: number;
+  grid: Grid;
 };
 
 export default class Block {
@@ -40,6 +40,8 @@ export default class Block {
   mesh: Mesh;
   row: number;
   column: number;
+  grid: Grid;
+  static map: { [uuid: string]: Block } = {};
 
   constructor(setup: BlockSetup) {
     const planeGeometry = new PlaneGeometry();
@@ -59,8 +61,9 @@ export default class Block {
     // plane.rotation.set(...rotationByCubeFace[setup.face]);
     // plane.parent = setup.parent;
     // setup.parent.children.push(plane);
-    setup.parent.add(plane);
+    setup.grid.mesh.add(plane);
     this.mesh = plane;
+    Block.map[plane.uuid] = this;
 
     this.division = setup.division;
     this.isStatic = setup.isStatic || false;
@@ -69,5 +72,46 @@ export default class Block {
     this.isEletrified = Boolean(setup.isEmitter && !setup.color);
     this.row = setup.row;
     this.column = setup.column;
+    this.grid = setup.grid;
+  }
+
+  getMovementBoundaries(): { x: [number, number]; y: [number, number] } {
+    let minX = -1.5 / GRID_SIZE;
+    let maxX = 1.5 / GRID_SIZE;
+    let minY = -1.5 / GRID_SIZE;
+    let maxY = 1.5 / GRID_SIZE;
+
+    for (let i = this.column - 1; i >= 0; i--) {
+      if (this.grid.blockGrid[this.row][i]) {
+        minX = (-1.5 + i + 1) / GRID_SIZE;
+        break;
+      }
+    }
+
+    for (let i = this.column + 1; i < GRID_SIZE; i++) {
+      if (this.grid.blockGrid[this.row][i]) {
+        maxX = (-1.5 + i - 1) / GRID_SIZE;
+        break;
+      }
+    }
+
+    for (let i = this.row - 1; i >= 0; i--) {
+      if (this.grid.blockGrid[i][this.column]) {
+        maxY = (1.5 - i - 1) / GRID_SIZE;
+        break;
+      }
+    }
+
+    for (let i = this.row + 1; i < GRID_SIZE; i++) {
+      if (this.grid.blockGrid[i][this.column]) {
+        minY = (1.5 - i + 1) / GRID_SIZE;
+        break;
+      }
+    }
+
+    return {
+      x: [minX, maxX],
+      y: [minY, maxY],
+    };
   }
 }
