@@ -67,6 +67,7 @@ export type BlockColor = "BLUE" | "GREEN" | "ORANGE" | "PURPLE" | "YELLOW";
 export const BLOCK_MESH_NAME = "Block";
 const generalEmitterMaterial = new LineBasicMaterial({ color: "red" });
 const generalLineMaterial = new LineBasicMaterial({ color: "gray" });
+const backMaskMaterial = new MeshBasicMaterial({ color: "black" });
 
 export type BlockOptions = {
   division: BlockPortDivision;
@@ -118,6 +119,12 @@ export default class Block {
     setup.grid.mesh.add(plane);
     this.mesh = plane;
     Block.map[plane.uuid] = this;
+
+    // const maskPlaneGeometry = new PlaneGeometry();
+    const mask = new Mesh(planeGeometry, backMaskMaterial);
+    mask.position.setZ(-0.001);
+    mask.rotateX(Math.PI);
+    plane.add(mask);
 
     this.division = setup.division;
     this.isStatic = setup.isStatic || false;
