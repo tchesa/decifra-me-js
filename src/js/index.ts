@@ -66,65 +66,66 @@ const cube = new Cube({
     ],
     [undefined, undefined, undefined, undefined],
   ],
-  // RIGHT: [
-  //   [undefined, undefined, undefined, undefined],
-  //   [undefined, undefined, undefined, undefined],
-  //   [
-  //     { division: "LEFT_RIGHT" },
-  //     { division: "LEFT_RIGHT" },
-  //     { division: "LEFT_RIGHT" },
-  //     { division: "BOT_LEFT_TOP", isEmitter: true },
-  //   ],
-  //   [undefined, undefined, undefined, undefined],
-  // ],
-  // BACK: [
-  //   [undefined, undefined, undefined, undefined],
-  //   [undefined, undefined, undefined, undefined],
-  //   [
-  //     { division: "LEFT_RIGHT" },
-  //     { division: "LEFT_RIGHT" },
-  //     { division: "LEFT_RIGHT" },
-  //     { division: "BOT_LEFT_TOP", isEmitter: true },
-  //   ],
-  //   [undefined, undefined, undefined, undefined],
-  // ],
-  // LEFT: [
-  //   [undefined, undefined, undefined, undefined],
-  //   [undefined, undefined, undefined, undefined],
-  //   [
-  //     { division: "LEFT_RIGHT" },
-  //     { division: "LEFT_RIGHT" },
-  //     { division: "LEFT_RIGHT" },
-  //     { division: "BOT_LEFT_TOP", isEmitter: true },
-  //   ],
-  //   [undefined, undefined, undefined, undefined],
-  // ],
-  // TOP: [
-  //   [undefined, undefined, undefined, undefined],
-  //   [undefined, undefined, undefined, undefined],
-  //   [
-  //     { division: "LEFT_RIGHT" },
-  //     { division: "LEFT_RIGHT" },
-  //     { division: "LEFT_RIGHT" },
-  //     { division: "BOT_LEFT_TOP", isEmitter: true },
-  //   ],
-  //   [undefined, undefined, undefined, undefined],
-  // ],
-  // BOT: [
-  //   [undefined, undefined, undefined, undefined],
-  //   [undefined, undefined, undefined, undefined],
-  //   [
-  //     { division: "LEFT_RIGHT" },
-  //     { division: "LEFT_RIGHT" },
-  //     { division: "LEFT_RIGHT" },
-  //     { division: "BOT_LEFT_TOP", isEmitter: true },
-  //   ],
-  //   [undefined, undefined, undefined, undefined],
-  // ],
+  RIGHT: [
+    [undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined],
+    [
+      { division: "LEFT_RIGHT" },
+      { division: "LEFT_RIGHT" },
+      { division: "LEFT_RIGHT" },
+      { division: "BOT_LEFT_TOP", isEmitter: true },
+    ],
+    [undefined, undefined, undefined, undefined],
+  ],
+  BACK: [
+    [undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined],
+    [
+      { division: "LEFT_RIGHT" },
+      { division: "LEFT_RIGHT" },
+      { division: "LEFT_RIGHT" },
+      { division: "BOT_LEFT_TOP", isEmitter: true },
+    ],
+    [undefined, undefined, undefined, undefined],
+  ],
+  LEFT: [
+    [undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined],
+    [
+      { division: "LEFT_RIGHT" },
+      { division: "LEFT_RIGHT" },
+      { division: "LEFT_RIGHT" },
+      { division: "BOT_LEFT_TOP", isEmitter: true },
+    ],
+    [undefined, undefined, undefined, undefined],
+  ],
+  TOP: [
+    [undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined],
+    [
+      { division: "LEFT_RIGHT" },
+      { division: "LEFT_RIGHT" },
+      { division: "LEFT_RIGHT" },
+      { division: "BOT_LEFT_TOP", isEmitter: true },
+    ],
+    [undefined, undefined, undefined, undefined],
+  ],
+  BOT: [
+    [undefined, undefined, undefined, undefined],
+    [undefined, undefined, undefined, undefined],
+    [
+      { division: "LEFT_RIGHT" },
+      { division: "LEFT_RIGHT" },
+      { division: "LEFT_RIGHT" },
+      { division: "BOT_LEFT_TOP", isEmitter: true },
+    ],
+    [undefined, undefined, undefined, undefined],
+  ],
 });
 
 const mousePosition = new THREE.Vector2();
 let dragging: THREE.Object3D | undefined;
+let pointerOffset = new THREE.Vector3();
 
 window.addEventListener("mousemove", function (e) {
   mousePosition.x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -141,12 +142,13 @@ window.addEventListener("mousemove", function (e) {
       // const gridRight = new THREE.Vector3(-1, 0, 0);
 
       const up = getGlobalUp(dragging.parent!);
-
       dragging.position.set(
         (gridTransformPosition.x - hit.x / GRID_SIZE) * -up.y +
-          (gridTransformPosition.y - hit.y / GRID_SIZE) * up.x,
+          (gridTransformPosition.y - hit.y / GRID_SIZE) * up.x -
+          pointerOffset.x,
         (gridTransformPosition.y - hit.y / GRID_SIZE) * -up.y +
-          (gridTransformPosition.x - hit.x / GRID_SIZE) * -up.x,
+          (gridTransformPosition.x - hit.x / GRID_SIZE) * -up.x -
+          pointerOffset.y,
         0
       );
     }
@@ -170,6 +172,26 @@ window.addEventListener("mousedown", function (e) {
 
   if (blockIntersection) {
     dragging = blockIntersection.object;
+
+    const gridTransformPosition = dragging.parent!.getWorldPosition(
+      new THREE.Vector3()
+    );
+    const hit = intersects[0].point;
+    const up = getGlobalUp(dragging.parent!);
+
+    const pointerLocalPosition = new THREE.Vector3(
+      (gridTransformPosition.x - hit.x / GRID_SIZE) * -up.y +
+        (gridTransformPosition.y - hit.y / GRID_SIZE) * up.x,
+      (gridTransformPosition.y - hit.y / GRID_SIZE) * -up.y +
+        (gridTransformPosition.x - hit.x / GRID_SIZE) * -up.x,
+      0
+    );
+    pointerOffset = new THREE.Vector3(
+      pointerLocalPosition.x - dragging.position.x,
+      pointerLocalPosition.y - dragging.position.y,
+      0
+    );
+    console.log("offset", pointerOffset);
   }
 });
 

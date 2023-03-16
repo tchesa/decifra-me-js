@@ -48,8 +48,8 @@ export default class Grid {
     const planeGeometry = new PlaneGeometry();
     const planeMaterial = new MeshBasicMaterial({
       color: "yellow",
-      wireframe: true,
-      // map: textureLoader.load(arrow),
+      // wireframe: true,
+      map: textureLoader.load(arrow),
     });
     const plane = new Mesh(planeGeometry, planeMaterial);
     // plane.scale.set(GRID_SIZE, GRID_SIZE, 1);
