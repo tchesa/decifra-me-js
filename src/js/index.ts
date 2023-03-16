@@ -69,7 +69,7 @@ const cube = new Cube({
     [undefined, undefined, undefined, { division: "LEFT_RIGHT" }],
     [undefined, undefined, undefined, undefined],
     [
-      { division: "LEFT_RIGHT" },
+      { division: "LEFT_RIGHT", isStatic: true },
       { division: "LEFT_RIGHT" },
       // { division: "LEFT_RIGHT" },
       undefined,
@@ -200,7 +200,11 @@ window.addEventListener("mousedown", function (e) {
     (intersect) => intersect.object.name === BLOCK_MESH_NAME
   );
 
-  if (blockIntersection) {
+  if (
+    blockIntersection &&
+    Block.map[blockIntersection.object.uuid] &&
+    !Block.map[blockIntersection.object.uuid].isStatic
+  ) {
     dragging = blockIntersection.object;
     draggingInitialPosition.set(
       dragging.position.x,
@@ -231,7 +235,10 @@ window.addEventListener("mousedown", function (e) {
 });
 
 window.addEventListener("mouseup", function (e) {
-  Block.map[dragging!.uuid].snapPosition();
+  if (dragging && Block.map[dragging.uuid]) {
+    Block.map[dragging!.uuid].snapPosition();
+  }
+
   dragging = undefined;
 });
 

@@ -1,4 +1,12 @@
-import { Mesh, MeshBasicMaterial, PlaneGeometry } from "three";
+import {
+  BufferGeometry,
+  Line,
+  LineBasicMaterial,
+  Mesh,
+  MeshBasicMaterial,
+  PlaneGeometry,
+  Vector3,
+} from "three";
 import Grid, { GRID_SIZE } from "./Grid";
 
 export type BlockPortDivision =
@@ -48,6 +56,8 @@ export default class Block {
     const planeMaterial = new MeshBasicMaterial({
       color: "red",
       // wireframe: true,
+      transparent: true,
+      opacity: 0,
       // map: textureLoader.load(arrow),
     });
     const plane = new Mesh(planeGeometry, planeMaterial);
@@ -67,6 +77,16 @@ export default class Block {
 
     this.division = setup.division;
     this.isStatic = setup.isStatic || false;
+
+    const connectionLines = Block.drawConnectionLines(this.division);
+    connectionLines.forEach((line) => {
+      this.mesh.add(line);
+    });
+    const borderLines = Block.drawBorders(this.isStatic);
+    borderLines.forEach((line) => {
+      this.mesh.add(line);
+    });
+
     this.isEmitter = setup.isEmitter || false;
     this.color = setup.color;
     this.isEletrified = Boolean(setup.isEmitter && !setup.color);
@@ -130,5 +150,171 @@ export default class Block {
     this.grid.updateBlockPosition(this.row, this.column, newRow, newColumn);
     this.row = newRow;
     this.column = newColumn;
+  }
+
+  static connectionLineMaterial = new LineBasicMaterial({ color: "gray" });
+  static drawConnectionLines(division: BlockPortDivision): Line[] {
+    const lines: Line[] = [];
+
+    if (
+      division === "TOP_BOT" ||
+      division === "TOP_RIGHT" ||
+      division === "LEFT_TOP" ||
+      division === "BOT_LEFT_TOP" ||
+      division === "LEFT_TOP_RIGHT" ||
+      division === "TOP_RIGHT_BOT" ||
+      division === "TOP_BOT_LEFT_RIGHT"
+    ) {
+      const bufferGeometry = new BufferGeometry();
+      const geometry = bufferGeometry.setFromPoints([
+        new Vector3(0, 0, 0),
+        new Vector3(0, 0.5, 0),
+      ]);
+      lines.push(new Line(geometry, Block.connectionLineMaterial));
+    }
+
+    if (
+      division === "LEFT_RIGHT" ||
+      division === "TOP_RIGHT" ||
+      division === "RIGHT_BOT" ||
+      division === "LEFT_TOP_RIGHT" ||
+      division === "TOP_RIGHT_BOT" ||
+      division === "RIGHT_BOT_LEFT" ||
+      division === "TOP_BOT_LEFT_RIGHT"
+    ) {
+      const bufferGeometry = new BufferGeometry();
+      const geometry = bufferGeometry.setFromPoints([
+        new Vector3(0, 0, 0),
+        new Vector3(0.5, 0, 0),
+      ]);
+      lines.push(new Line(geometry, Block.connectionLineMaterial));
+    }
+
+    if (
+      division === "TOP_BOT" ||
+      division === "RIGHT_BOT" ||
+      division === "BOT_LEFT" ||
+      division === "TOP_RIGHT_BOT" ||
+      division === "RIGHT_BOT_LEFT" ||
+      division === "BOT_LEFT_TOP" ||
+      division === "TOP_BOT_LEFT_RIGHT"
+    ) {
+      const bufferGeometry = new BufferGeometry();
+      const geometry = bufferGeometry.setFromPoints([
+        new Vector3(0, 0, 0),
+        new Vector3(0, -0.5, 0),
+      ]);
+      lines.push(new Line(geometry, Block.connectionLineMaterial));
+    }
+
+    if (
+      division === "LEFT_RIGHT" ||
+      division === "BOT_LEFT" ||
+      division === "LEFT_TOP" ||
+      division === "RIGHT_BOT_LEFT" ||
+      division === "BOT_LEFT_TOP" ||
+      division === "LEFT_TOP_RIGHT" ||
+      division === "TOP_BOT_LEFT_RIGHT"
+    ) {
+      const bufferGeometry = new BufferGeometry();
+      const geometry = bufferGeometry.setFromPoints([
+        new Vector3(0, 0, 0),
+        new Vector3(-0.5, 0, 0),
+      ]);
+      lines.push(new Line(geometry, Block.connectionLineMaterial));
+    }
+
+    return lines;
+  }
+
+  static drawBorders(isStatic: boolean): Line[] {
+    const lines: Line[] = [];
+    const outerBorderDistance = 0.45;
+    const innerBorderDistance = 0.2;
+    const staticBorderDistance = 0.2;
+
+    const bufferGeometry = new BufferGeometry();
+    const geometry = bufferGeometry.setFromPoints([
+      new Vector3(-innerBorderDistance, -innerBorderDistance, 0),
+      new Vector3(innerBorderDistance, -innerBorderDistance, 0),
+      new Vector3(innerBorderDistance, innerBorderDistance, 0),
+      new Vector3(-innerBorderDistance, innerBorderDistance, 0),
+      new Vector3(-innerBorderDistance, -innerBorderDistance, 0),
+    ]);
+    lines.push(new Line(geometry, Block.connectionLineMaterial));
+
+    if (isStatic) {
+      const geometry = new BufferGeometry().setFromPoints([
+        new Vector3(
+          -outerBorderDistance,
+          -outerBorderDistance + staticBorderDistance,
+          0
+        ),
+        new Vector3(-outerBorderDistance, -outerBorderDistance, 0),
+        new Vector3(
+          -outerBorderDistance + staticBorderDistance,
+          -outerBorderDistance,
+          0
+        ),
+      ]);
+      lines.push(new Line(geometry, Block.connectionLineMaterial));
+
+      const geometry2 = new BufferGeometry().setFromPoints([
+        new Vector3(
+          outerBorderDistance - staticBorderDistance,
+          -outerBorderDistance,
+          0
+        ),
+        new Vector3(outerBorderDistance, -outerBorderDistance, 0),
+        new Vector3(
+          outerBorderDistance,
+          -outerBorderDistance + staticBorderDistance,
+          0
+        ),
+      ]);
+      lines.push(new Line(geometry2, Block.connectionLineMaterial));
+
+      const geometry3 = new BufferGeometry().setFromPoints([
+        new Vector3(
+          outerBorderDistance,
+          outerBorderDistance - staticBorderDistance,
+          0
+        ),
+        new Vector3(outerBorderDistance, outerBorderDistance, 0),
+        new Vector3(
+          outerBorderDistance - staticBorderDistance,
+          outerBorderDistance,
+          0
+        ),
+      ]);
+      lines.push(new Line(geometry3, Block.connectionLineMaterial));
+
+      const geometry4 = new BufferGeometry().setFromPoints([
+        new Vector3(
+          -outerBorderDistance + staticBorderDistance,
+          outerBorderDistance,
+          0
+        ),
+        new Vector3(-outerBorderDistance, outerBorderDistance, 0),
+        new Vector3(
+          -outerBorderDistance,
+          outerBorderDistance - staticBorderDistance,
+          0
+        ),
+      ]);
+      lines.push(new Line(geometry4, Block.connectionLineMaterial));
+    } else {
+      const bufferGeometry = new BufferGeometry();
+      const geometry = bufferGeometry.setFromPoints([
+        new Vector3(-outerBorderDistance, -outerBorderDistance, 0),
+        new Vector3(outerBorderDistance, -outerBorderDistance, 0),
+        new Vector3(outerBorderDistance, outerBorderDistance, 0),
+        new Vector3(-outerBorderDistance, outerBorderDistance, 0),
+        new Vector3(-outerBorderDistance, -outerBorderDistance, 0),
+      ]);
+      lines.push(new Line(geometry, Block.connectionLineMaterial));
+    }
+
+    return lines;
   }
 }
