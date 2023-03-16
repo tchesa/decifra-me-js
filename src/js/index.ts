@@ -1,4 +1,13 @@
-import * as THREE from "three";
+import {
+  DirectionalLight,
+  Object3D,
+  OrthographicCamera,
+  Raycaster,
+  Scene,
+  Vector2,
+  Vector3,
+  WebGLRenderer,
+} from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as dat from "dat.gui";
 import Cube from "./Cube";
@@ -10,22 +19,22 @@ import { clamp } from "three/src/math/MathUtils";
 // import texture1 from "../textures/1.png";
 // import bg from "../textures/bg.jpeg";
 
-const renderer = new THREE.WebGLRenderer();
+const renderer = new WebGLRenderer();
 renderer.shadowMap.enabled = true;
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 
 document.body.appendChild(renderer.domElement);
 
-window.scene = new THREE.Scene();
+window.scene = new Scene();
 
-// const camera = new THREE.PerspectiveCamera(
+// const camera = new PerspectiveCamera(
 //   75,
 //   window.innerWidth / window.innerHeight,
 //   0.1,
 //   1000
 // );
-const camera = new THREE.OrthographicCamera(
+const camera = new OrthographicCamera(
   -5,
   5,
   5 * (window.innerHeight / window.innerWidth),
@@ -35,25 +44,25 @@ const camera = new THREE.OrthographicCamera(
 );
 camera.position.z = 5;
 
-// const textureLoader = new THREE.TextureLoader();
+// const textureLoader = new TextureLoader();
 
 // const orbit = new OrbitControls(camera, renderer.domElement);
 // orbit.update();
 
-// const axesHelper = new THREE.AxesHelper(5);
+// const axesHelper = new AxesHelper(5);
 // window.scene.add(axesHelper);
 
 // directional light
-const directionalLight = new THREE.DirectionalLight("white", 0.5);
+const directionalLight = new DirectionalLight("white", 0.5);
 directionalLight.position.set(0, 0, 1);
 window.scene.add(directionalLight);
 
-// const boxGeometry = new THREE.BoxGeometry();
-// const boxMaterial = new THREE.MeshStandardMaterial({
+// const boxGeometry = new BoxGeometry();
+// const boxMaterial = new MeshStandardMaterial({
 //   color: "white",
 //   // map: textureLoader.load(texture1),
 // });
-// const box = new THREE.Mesh(boxGeometry, boxMaterial);
+// const box = new Mesh(boxGeometry, boxMaterial);
 // box.scale.set(4, 4, 4);
 const cube = new Cube({
   FRONT: [
@@ -126,10 +135,10 @@ const cube = new Cube({
   // ],
 });
 
-const mousePosition = new THREE.Vector2();
-let dragging: THREE.Object3D | undefined;
-let draggingInitialPosition = new THREE.Vector3();
-let pointerOffset = new THREE.Vector3();
+const mousePosition = new Vector2();
+let dragging: Object3D | undefined;
+let draggingInitialPosition = new Vector3();
+let pointerOffset = new Vector3();
 
 window.addEventListener("mousemove", function (e) {
   mousePosition.x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -141,12 +150,11 @@ window.addEventListener("mousemove", function (e) {
     if (intersects.length > 0) {
       const hit = intersects[0].point;
       const gridTransformPosition = dragging.parent!.getWorldPosition(
-        new THREE.Vector3()
+        new Vector3()
       );
-      // const gridRight = new THREE.Vector3(-1, 0, 0);
 
       const up = getGlobalUp(dragging.parent!);
-      const pointerLocalPosition = new THREE.Vector3(
+      const pointerLocalPosition = new Vector3(
         (gridTransformPosition.x - hit.x / GRID_SIZE) * -up.y +
           (gridTransformPosition.y - hit.y / GRID_SIZE) * up.x -
           pointerOffset.x,
@@ -163,7 +171,7 @@ window.addEventListener("mousemove", function (e) {
       const movementBoundaries =
         Block.map[dragging.uuid].getMovementBoundaries();
 
-      const limitedPosition = new THREE.Vector3(
+      const limitedPosition = new Vector3(
         clamp(pointerLocalPosition.x, ...movementBoundaries.x),
         clamp(pointerLocalPosition.y, ...movementBoundaries.y),
         pointerLocalPosition.z
@@ -202,12 +210,12 @@ window.addEventListener("mousedown", function (e) {
     );
 
     const gridTransformPosition = dragging.parent!.getWorldPosition(
-      new THREE.Vector3()
+      new Vector3()
     );
     const hit = intersects[0].point;
     const up = getGlobalUp(dragging.parent!);
 
-    const pointerLocalPosition = new THREE.Vector3(
+    const pointerLocalPosition = new Vector3(
       (gridTransformPosition.x - hit.x / GRID_SIZE) * -up.y +
         (gridTransformPosition.y - hit.y / GRID_SIZE) * up.x,
       (gridTransformPosition.y - hit.y / GRID_SIZE) * -up.y +
@@ -215,7 +223,7 @@ window.addEventListener("mousedown", function (e) {
       0
     );
 
-    pointerOffset = new THREE.Vector3(
+    pointerOffset = new Vector3(
       pointerLocalPosition.x - dragging.position.x,
       pointerLocalPosition.y - dragging.position.y,
       0
@@ -227,7 +235,7 @@ window.addEventListener("mouseup", function (e) {
   dragging = undefined;
 });
 
-const raycaster = new THREE.Raycaster();
+const raycaster = new Raycaster();
 
 // let drag = undefined
 
