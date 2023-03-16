@@ -147,9 +147,12 @@ export default class Block {
       (1.5 - newRow) / GRID_SIZE,
       0
     );
-    this.grid.updateBlockPosition(this.row, this.column, newRow, newColumn);
-    this.row = newRow;
-    this.column = newColumn;
+
+    if (newRow !== this.row || newColumn !== this.column) {
+      this.grid.updateBlockPosition(this.row, this.column, newRow, newColumn);
+      this.row = newRow;
+      this.column = newColumn;
+    }
   }
 
   static connectionLineMaterial = new LineBasicMaterial({ color: "gray" });
