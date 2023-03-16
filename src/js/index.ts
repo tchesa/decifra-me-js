@@ -5,6 +5,7 @@ import Cube from "./Cube";
 import { BLOCK_MESH_NAME } from "./Block";
 import { GRID_SIZE } from "./Grid";
 import { getGlobalUp } from "./utils";
+import { clamp } from "three/src/math/MathUtils";
 
 // import texture1 from "../textures/1.png";
 // import bg from "../textures/bg.jpeg";
@@ -60,67 +61,69 @@ const cube = new Cube({
     [undefined, undefined, undefined, undefined],
     [
       { division: "LEFT_RIGHT" },
-      { division: "LEFT_RIGHT" },
-      { division: "LEFT_RIGHT" },
+      // { division: "LEFT_RIGHT" },
+      // { division: "LEFT_RIGHT" },
+      undefined,
+      undefined,
       { division: "BOT_LEFT_TOP", isEmitter: true },
     ],
     [undefined, undefined, undefined, undefined],
   ],
-  RIGHT: [
-    [undefined, undefined, undefined, undefined],
-    [undefined, undefined, undefined, undefined],
-    [
-      { division: "LEFT_RIGHT" },
-      { division: "LEFT_RIGHT" },
-      { division: "LEFT_RIGHT" },
-      { division: "BOT_LEFT_TOP", isEmitter: true },
-    ],
-    [undefined, undefined, undefined, undefined],
-  ],
-  BACK: [
-    [undefined, undefined, undefined, undefined],
-    [undefined, undefined, undefined, undefined],
-    [
-      { division: "LEFT_RIGHT" },
-      { division: "LEFT_RIGHT" },
-      { division: "LEFT_RIGHT" },
-      { division: "BOT_LEFT_TOP", isEmitter: true },
-    ],
-    [undefined, undefined, undefined, undefined],
-  ],
-  LEFT: [
-    [undefined, undefined, undefined, undefined],
-    [undefined, undefined, undefined, undefined],
-    [
-      { division: "LEFT_RIGHT" },
-      { division: "LEFT_RIGHT" },
-      { division: "LEFT_RIGHT" },
-      { division: "BOT_LEFT_TOP", isEmitter: true },
-    ],
-    [undefined, undefined, undefined, undefined],
-  ],
-  TOP: [
-    [undefined, undefined, undefined, undefined],
-    [undefined, undefined, undefined, undefined],
-    [
-      { division: "LEFT_RIGHT" },
-      { division: "LEFT_RIGHT" },
-      { division: "LEFT_RIGHT" },
-      { division: "BOT_LEFT_TOP", isEmitter: true },
-    ],
-    [undefined, undefined, undefined, undefined],
-  ],
-  BOT: [
-    [undefined, undefined, undefined, undefined],
-    [undefined, undefined, undefined, undefined],
-    [
-      { division: "LEFT_RIGHT" },
-      { division: "LEFT_RIGHT" },
-      { division: "LEFT_RIGHT" },
-      { division: "BOT_LEFT_TOP", isEmitter: true },
-    ],
-    [undefined, undefined, undefined, undefined],
-  ],
+  // RIGHT: [
+  //   [undefined, undefined, undefined, undefined],
+  //   [undefined, undefined, undefined, undefined],
+  //   [
+  //     { division: "LEFT_RIGHT" },
+  //     { division: "LEFT_RIGHT" },
+  //     { division: "LEFT_RIGHT" },
+  //     { division: "BOT_LEFT_TOP", isEmitter: true },
+  //   ],
+  //   [undefined, undefined, undefined, undefined],
+  // ],
+  // BACK: [
+  //   [undefined, undefined, undefined, undefined],
+  //   [undefined, undefined, undefined, undefined],
+  //   [
+  //     { division: "LEFT_RIGHT" },
+  //     { division: "LEFT_RIGHT" },
+  //     { division: "LEFT_RIGHT" },
+  //     { division: "BOT_LEFT_TOP", isEmitter: true },
+  //   ],
+  //   [undefined, undefined, undefined, undefined],
+  // ],
+  // LEFT: [
+  //   [undefined, undefined, undefined, undefined],
+  //   [undefined, undefined, undefined, undefined],
+  //   [
+  //     { division: "LEFT_RIGHT" },
+  //     { division: "LEFT_RIGHT" },
+  //     { division: "LEFT_RIGHT" },
+  //     { division: "BOT_LEFT_TOP", isEmitter: true },
+  //   ],
+  //   [undefined, undefined, undefined, undefined],
+  // ],
+  // TOP: [
+  //   [undefined, undefined, undefined, undefined],
+  //   [undefined, undefined, undefined, undefined],
+  //   [
+  //     { division: "LEFT_RIGHT" },
+  //     { division: "LEFT_RIGHT" },
+  //     { division: "LEFT_RIGHT" },
+  //     { division: "BOT_LEFT_TOP", isEmitter: true },
+  //   ],
+  //   [undefined, undefined, undefined, undefined],
+  // ],
+  // BOT: [
+  //   [undefined, undefined, undefined, undefined],
+  //   [undefined, undefined, undefined, undefined],
+  //   [
+  //     { division: "LEFT_RIGHT" },
+  //     { division: "LEFT_RIGHT" },
+  //     { division: "LEFT_RIGHT" },
+  //     { division: "BOT_LEFT_TOP", isEmitter: true },
+  //   ],
+  //   [undefined, undefined, undefined, undefined],
+  // ],
 });
 
 const mousePosition = new THREE.Vector2();
@@ -157,9 +160,15 @@ window.addEventListener("mousemove", function (e) {
         Math.abs(draggingInitialPosition.x - pointerLocalPosition.x) >
         Math.abs(draggingInitialPosition.y - pointerLocalPosition.y);
 
+      const limitedPosition = new THREE.Vector3(
+        clamp(pointerLocalPosition.x, -1.5 / GRID_SIZE, 1.5 / GRID_SIZE),
+        clamp(pointerLocalPosition.y, -1.5 / GRID_SIZE, 1.5 / GRID_SIZE),
+        pointerLocalPosition.z
+      );
+
       dragging.position.set(
-        horizontal ? pointerLocalPosition.x : draggingInitialPosition.x,
-        horizontal ? draggingInitialPosition.y : pointerLocalPosition.y,
+        horizontal ? limitedPosition.x : draggingInitialPosition.x,
+        horizontal ? draggingInitialPosition.y : limitedPosition.y,
         0
       );
     }
