@@ -25,6 +25,8 @@ export type BlockPortDivision =
 export type BlockColor = "BLUE" | "GREEN" | "ORANGE" | "PURPLE" | "YELLOW";
 
 export const BLOCK_MESH_NAME = "Block";
+const generalEmitterMaterial = new LineBasicMaterial({ color: "red" });
+const generalLineMaterial = new LineBasicMaterial({ color: "gray" });
 
 export type BlockOptions = {
   division: BlockPortDivision;
@@ -50,6 +52,8 @@ export default class Block {
   column: number;
   grid: Grid;
   static map: { [uuid: string]: Block } = {};
+  private outerLineMaterial: LineBasicMaterial;
+  private connectionLineMaterial: LineBasicMaterial;
 
   constructor(setup: BlockSetup) {
     const planeGeometry = new PlaneGeometry();
@@ -77,22 +81,37 @@ export default class Block {
 
     this.division = setup.division;
     this.isStatic = setup.isStatic || false;
+    this.isEmitter = setup.isEmitter || false;
+    this.color = setup.color;
+    this.grid = setup.grid;
+    this.isEletrified = Boolean(setup.isEmitter && !setup.color);
 
-    const connectionLines = Block.drawConnectionLines(this.division);
+    if (this.isEmitter && !this.color) {
+      this.grid.cube.emitter = this;
+    }
+
+    this.connectionLineMaterial = new LineBasicMaterial({
+      color: this.isEletrified ? "red" : "gray",
+    });
+    const connectionLines = Block.drawConnectionLines(
+      this.division,
+      this.connectionLineMaterial
+    );
     connectionLines.forEach((line) => {
       this.mesh.add(line);
     });
-    const borderLines = Block.drawBorders(this.isStatic);
+    this.outerLineMaterial = new LineBasicMaterial({ color: "gray" });
+    const borderLines = Block.drawBorders(
+      this.outerLineMaterial,
+      this.isStatic,
+      this.isEmitter
+    );
     borderLines.forEach((line) => {
       this.mesh.add(line);
     });
 
-    this.isEmitter = setup.isEmitter || false;
-    this.color = setup.color;
-    this.isEletrified = Boolean(setup.isEmitter && !setup.color);
     this.row = setup.row;
     this.column = setup.column;
-    this.grid = setup.grid;
   }
 
   getMovementBoundaries(): { x: [number, number]; y: [number, number] } {
@@ -156,7 +175,10 @@ export default class Block {
   }
 
   static connectionLineMaterial = new LineBasicMaterial({ color: "gray" });
-  static drawConnectionLines(division: BlockPortDivision): Line[] {
+  static drawConnectionLines(
+    division: BlockPortDivision,
+    material: LineBasicMaterial
+  ): Line[] {
     const lines: Line[] = [];
 
     if (
@@ -173,7 +195,7 @@ export default class Block {
         new Vector3(0, 0, 0),
         new Vector3(0, 0.5, 0),
       ]);
-      lines.push(new Line(geometry, Block.connectionLineMaterial));
+      lines.push(new Line(geometry, material));
     }
 
     if (
@@ -190,7 +212,7 @@ export default class Block {
         new Vector3(0, 0, 0),
         new Vector3(0.5, 0, 0),
       ]);
-      lines.push(new Line(geometry, Block.connectionLineMaterial));
+      lines.push(new Line(geometry, material));
     }
 
     if (
@@ -207,7 +229,7 @@ export default class Block {
         new Vector3(0, 0, 0),
         new Vector3(0, -0.5, 0),
       ]);
-      lines.push(new Line(geometry, Block.connectionLineMaterial));
+      lines.push(new Line(geometry, material));
     }
 
     if (
@@ -224,19 +246,26 @@ export default class Block {
         new Vector3(0, 0, 0),
         new Vector3(-0.5, 0, 0),
       ]);
-      lines.push(new Line(geometry, Block.connectionLineMaterial));
+      lines.push(new Line(geometry, material));
     }
 
     return lines;
   }
 
-  static drawBorders(isStatic: boolean): Line[] {
+  static drawBorders(
+    outerLineMaterial: LineBasicMaterial,
+    isStatic: boolean,
+    isEmitter: boolean
+  ): Line[] {
     const lines: Line[] = [];
     const outerBorderDistance = 0.45;
     const innerBorderDistance = 0.2;
     const staticBorderDistance = 0.2;
 
     const bufferGeometry = new BufferGeometry();
+    const innerLineMaterial = isEmitter
+      ? generalEmitterMaterial
+      : generalLineMaterial;
     const geometry = bufferGeometry.setFromPoints([
       new Vector3(-innerBorderDistance, -innerBorderDistance, 0),
       new Vector3(innerBorderDistance, -innerBorderDistance, 0),
@@ -244,7 +273,7 @@ export default class Block {
       new Vector3(-innerBorderDistance, innerBorderDistance, 0),
       new Vector3(-innerBorderDistance, -innerBorderDistance, 0),
     ]);
-    lines.push(new Line(geometry, Block.connectionLineMaterial));
+    lines.push(new Line(geometry, innerLineMaterial));
 
     if (isStatic) {
       const geometry = new BufferGeometry().setFromPoints([
@@ -260,7 +289,7 @@ export default class Block {
           0
         ),
       ]);
-      lines.push(new Line(geometry, Block.connectionLineMaterial));
+      lines.push(new Line(geometry, generalLineMaterial));
 
       const geometry2 = new BufferGeometry().setFromPoints([
         new Vector3(
@@ -275,7 +304,7 @@ export default class Block {
           0
         ),
       ]);
-      lines.push(new Line(geometry2, Block.connectionLineMaterial));
+      lines.push(new Line(geometry2, generalLineMaterial));
 
       const geometry3 = new BufferGeometry().setFromPoints([
         new Vector3(
@@ -290,7 +319,7 @@ export default class Block {
           0
         ),
       ]);
-      lines.push(new Line(geometry3, Block.connectionLineMaterial));
+      lines.push(new Line(geometry3, generalLineMaterial));
 
       const geometry4 = new BufferGeometry().setFromPoints([
         new Vector3(
@@ -305,7 +334,7 @@ export default class Block {
           0
         ),
       ]);
-      lines.push(new Line(geometry4, Block.connectionLineMaterial));
+      lines.push(new Line(geometry4, generalLineMaterial));
     } else {
       const bufferGeometry = new BufferGeometry();
       const geometry = bufferGeometry.setFromPoints([
@@ -315,9 +344,13 @@ export default class Block {
         new Vector3(-outerBorderDistance, outerBorderDistance, 0),
         new Vector3(-outerBorderDistance, -outerBorderDistance, 0),
       ]);
-      lines.push(new Line(geometry, Block.connectionLineMaterial));
+      lines.push(new Line(geometry, outerLineMaterial));
     }
 
     return lines;
+  }
+
+  toggleSelected(selected: boolean) {
+    this.outerLineMaterial.color.set(selected ? "white" : "gray");
   }
 }

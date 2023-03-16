@@ -8,7 +8,6 @@ import {
   Vector3,
   WebGLRenderer,
 } from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as dat from "dat.gui";
 import Cube from "./Cube";
 import Block, { BLOCK_MESH_NAME } from "./Block";
@@ -69,11 +68,11 @@ const cube = new Cube({
     [undefined, undefined, undefined, { division: "LEFT_RIGHT" }],
     [undefined, undefined, undefined, undefined],
     [
-      { division: "LEFT_RIGHT", isStatic: true },
+      { division: "LEFT_RIGHT" },
       { division: "LEFT_RIGHT" },
       // { division: "LEFT_RIGHT" },
       undefined,
-      { division: "BOT_LEFT_TOP", isEmitter: true },
+      { division: "BOT_LEFT_TOP", isEmitter: true, isStatic: true },
     ],
     [undefined, undefined, undefined, undefined],
   ],
@@ -206,6 +205,7 @@ window.addEventListener("mousedown", function (e) {
     !Block.map[blockIntersection.object.uuid].isStatic
   ) {
     dragging = blockIntersection.object;
+    Block.map[blockIntersection.object.uuid].toggleSelected(true);
     draggingInitialPosition.set(
       dragging.position.x,
       dragging.position.y,
@@ -236,6 +236,7 @@ window.addEventListener("mousedown", function (e) {
 
 window.addEventListener("mouseup", function (e) {
   if (dragging && Block.map[dragging.uuid]) {
+    Block.map[dragging.uuid].toggleSelected(false);
     Block.map[dragging!.uuid].snapPosition();
   }
 

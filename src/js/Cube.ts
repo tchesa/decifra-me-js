@@ -4,7 +4,7 @@ import {
   MeshBasicMaterial,
   MeshStandardMaterial,
 } from "three";
-import { BlockOptions, BlockSetup } from "./Block";
+import Block, { BlockOptions, BlockSetup } from "./Block";
 import Grid, { FixedGrid, GridSetup, GRID_SIZE } from "./Grid";
 
 export type CubeFace = "FRONT" | "BACK" | "LEFT" | "RIGHT" | "TOP" | "BOT";
@@ -17,6 +17,7 @@ export type CubeSetup = Partial<{
 export default class Cube {
   grids: Partial<{ [face in CubeFace]: Grid }>;
   mesh: Mesh;
+  emitter: Block | undefined;
 
   constructor(setup: CubeSetup) {
     const boxGeometry = new BoxGeometry();
@@ -45,5 +46,9 @@ export default class Cube {
         // grid.mesh.parent = this.mesh;
       }
     });
+
+    if (!this.emitter) {
+      console.warn("Emitter not found");
+    }
   }
 }
