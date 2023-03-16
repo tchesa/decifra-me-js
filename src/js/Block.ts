@@ -114,4 +114,21 @@ export default class Block {
       y: [minY, maxY],
     };
   }
+
+  snapPosition() {
+    const newColumn = Math.round(
+      (this.mesh.position.x + 1.5 / GRID_SIZE) * GRID_SIZE
+    );
+    const newRow = Math.round(
+      (1.5 / GRID_SIZE - this.mesh.position.y) * GRID_SIZE
+    );
+    this.mesh.position.set(
+      (-1.5 + newColumn) / GRID_SIZE,
+      (1.5 - newRow) / GRID_SIZE,
+      0
+    );
+    this.grid.updateBlockPosition(this.row, this.column, newRow, newColumn);
+    this.row = newRow;
+    this.column = newColumn;
+  }
 }

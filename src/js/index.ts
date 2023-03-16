@@ -70,9 +70,8 @@ const cube = new Cube({
     [undefined, undefined, undefined, undefined],
     [
       { division: "LEFT_RIGHT" },
+      { division: "LEFT_RIGHT" },
       // { division: "LEFT_RIGHT" },
-      // { division: "LEFT_RIGHT" },
-      undefined,
       undefined,
       { division: "BOT_LEFT_TOP", isEmitter: true },
     ],
@@ -232,6 +231,7 @@ window.addEventListener("mousedown", function (e) {
 });
 
 window.addEventListener("mouseup", function (e) {
+  Block.map[dragging!.uuid].snapPosition();
   dragging = undefined;
 });
 

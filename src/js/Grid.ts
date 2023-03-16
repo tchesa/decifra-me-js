@@ -84,4 +84,14 @@ export default class Grid {
       }
     }
   }
+
+  updateBlockPosition(
+    oldRow: number,
+    oldColumn: number,
+    newRow: number,
+    newColumn: number
+  ) {
+    this.blockGrid[newRow][newColumn] = this.blockGrid[oldRow][oldColumn];
+    this.blockGrid[oldRow][oldColumn] = undefined;
+  }
 }
