@@ -39,9 +39,10 @@ export type GridSetup = {
 
 export default class Grid {
   blockGrid: FixedGrid<Block>;
-  private face: CubeFace;
+  face: CubeFace;
   mesh: Mesh;
   cube: Cube;
+  blockList: Array<Block> = [];
 
   constructor(setup: GridSetup) {
     this.face = setup.face;
@@ -74,12 +75,14 @@ export default class Grid {
         const blockSetup = setup.grid[i][j];
 
         if (blockSetup) {
-          this.blockGrid[i][j] = new Block({
+          const block = new Block({
             ...blockSetup,
             row: i,
             column: j,
             grid: this,
           });
+          this.blockGrid[i][j] = block;
+          this.blockList.push(block);
         }
       }
     }

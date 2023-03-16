@@ -4,7 +4,14 @@ import {
   MeshBasicMaterial,
   MeshStandardMaterial,
 } from "three";
-import Block, { BlockOptions, BlockSetup } from "./Block";
+import Block, {
+  BlockOptions,
+  BlockSetup,
+  BOT_DIVISIONS,
+  LEFT_DIVISIONS,
+  RIGHT_DIVISIONS,
+  TOP_DIVISIONS,
+} from "./Block";
 import Grid, { FixedGrid, GridSetup, GRID_SIZE } from "./Grid";
 
 export type CubeFace = "FRONT" | "BACK" | "LEFT" | "RIGHT" | "TOP" | "BOT";
@@ -18,6 +25,7 @@ export default class Cube {
   grids: Partial<{ [face in CubeFace]: Grid }>;
   mesh: Mesh;
   emitter: Block | undefined;
+  blockCount: number = 0;
 
   constructor(setup: CubeSetup) {
     const boxGeometry = new BoxGeometry();
@@ -42,6 +50,7 @@ export default class Cube {
           cube: this,
         });
         this.grids[face] = grid;
+        this.blockCount += grid.blockList.length;
         // this.mesh.children.push(grid.mesh);
         // grid.mesh.parent = this.mesh;
       }
@@ -49,6 +58,109 @@ export default class Cube {
 
     if (!this.emitter) {
       console.warn("Emitter not found");
+    }
+  }
+
+  setAllEletrified(value: boolean) {
+    cubeFaces.forEach((face) => {
+      this.grids[face]?.blockList.forEach((block) => {
+        if (!block.isEmitter || block.color) {
+          block.setEletrified(value);
+        }
+      });
+    });
+  }
+
+  checkEletrified() {
+    // let eletrifiedCount = 1
+    this.setAllEletrified(false);
+
+    const queue: Block[] = [this.emitter!];
+    const visited: { [id: string]: boolean } = {
+      [this.emitter!.mesh.uuid]: true,
+    };
+
+    while (queue.length > 0) {
+      const [current] = queue.splice(0, 1);
+      // console.log(current.row, current.column);
+
+      // top
+      if (current.row > 0 && TOP_DIVISIONS.includes(current.division)) {
+        const topBlock =
+          this.grids[current.grid.face]!.blockGrid[current.row - 1][
+            current.column
+          ];
+        if (
+          topBlock &&
+          !visited[topBlock.mesh.uuid] &&
+          BOT_DIVISIONS.includes(topBlock.division)
+        ) {
+          topBlock.setEletrified(true);
+          // eletrifiedCount++
+          visited[topBlock.mesh.uuid] = true;
+          queue.push(topBlock);
+        }
+      }
+
+      // bottom
+      if (
+        current.row < GRID_SIZE - 1 &&
+        BOT_DIVISIONS.includes(current.division)
+      ) {
+        const botBlock =
+          this.grids[current.grid.face]!.blockGrid[current.row + 1][
+            current.column
+          ];
+        if (
+          botBlock &&
+          !visited[botBlock.mesh.uuid] &&
+          TOP_DIVISIONS.includes(botBlock.division)
+        ) {
+          botBlock.setEletrified(true);
+          // eletrifiedCount++
+          visited[botBlock.mesh.uuid] = true;
+          queue.push(botBlock);
+        }
+      }
+
+      // left
+      if (current.column > 0 && LEFT_DIVISIONS.includes(current.division)) {
+        const leftBlock =
+          this.grids[current.grid.face]!.blockGrid[current.row][
+            current.column - 1
+          ];
+        if (
+          leftBlock &&
+          !visited[leftBlock.mesh.uuid] &&
+          RIGHT_DIVISIONS.includes(leftBlock.division)
+        ) {
+          leftBlock.setEletrified(true);
+          // eletrifiedCount++
+          visited[leftBlock.mesh.uuid] = true;
+          queue.push(leftBlock);
+        }
+      }
+
+      // right
+      if (
+        current.column < GRID_SIZE - 1 &&
+        RIGHT_DIVISIONS.includes(current.division)
+      ) {
+        const rightBlock =
+          this.grids[current.grid.face]!.blockGrid[current.row][
+            current.column + 1
+          ];
+        if (
+          rightBlock &&
+          !visited[rightBlock.mesh.uuid] &&
+          LEFT_DIVISIONS.includes(rightBlock.division)
+        ) {
+          rightBlock.setEletrified(true);
+          // eletrifiedCount++
+          visited[rightBlock.mesh.uuid] = true;
+          queue.push(rightBlock);
+        }
+      }
     }
   }
 }

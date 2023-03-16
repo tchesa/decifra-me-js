@@ -238,6 +238,7 @@ window.addEventListener("mouseup", function (e) {
   if (dragging && Block.map[dragging.uuid]) {
     Block.map[dragging.uuid].toggleSelected(false);
     Block.map[dragging!.uuid].snapPosition();
+    cube.checkEletrified();
   }
 
   dragging = undefined;

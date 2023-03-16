@@ -4,7 +4,7 @@
     "./src/index.d.ts"
   ],
   "compilerOptions": {
-    "lib": ["es5", "es6", "dom"],
+    "lib": ["es5", "es6", "ES2016", "dom"],
     "strict": true
   }
 }

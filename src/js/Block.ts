@@ -22,6 +22,46 @@ export type BlockPortDivision =
   | "RIGHT_BOT_LEFT"
   | "TOP_BOT_LEFT_RIGHT";
 
+export const TOP_DIVISIONS: BlockPortDivision[] = [
+  "TOP_BOT",
+  "TOP_RIGHT",
+  "LEFT_TOP",
+  "BOT_LEFT_TOP",
+  "LEFT_TOP_RIGHT",
+  "TOP_RIGHT_BOT",
+  "TOP_BOT_LEFT_RIGHT",
+];
+
+export const RIGHT_DIVISIONS: BlockPortDivision[] = [
+  "LEFT_RIGHT",
+  "TOP_RIGHT",
+  "RIGHT_BOT",
+  "LEFT_TOP_RIGHT",
+  "TOP_RIGHT_BOT",
+  "RIGHT_BOT_LEFT",
+  "TOP_BOT_LEFT_RIGHT",
+];
+
+export const BOT_DIVISIONS: BlockPortDivision[] = [
+  "TOP_BOT",
+  "RIGHT_BOT",
+  "BOT_LEFT",
+  "TOP_RIGHT_BOT",
+  "RIGHT_BOT_LEFT",
+  "BOT_LEFT_TOP",
+  "TOP_BOT_LEFT_RIGHT",
+];
+
+export const LEFT_DIVISIONS: BlockPortDivision[] = [
+  "LEFT_RIGHT",
+  "BOT_LEFT",
+  "LEFT_TOP",
+  "RIGHT_BOT_LEFT",
+  "BOT_LEFT_TOP",
+  "LEFT_TOP_RIGHT",
+  "TOP_BOT_LEFT_RIGHT",
+];
+
 export type BlockColor = "BLUE" | "GREEN" | "ORANGE" | "PURPLE" | "YELLOW";
 
 export const BLOCK_MESH_NAME = "Block";
@@ -181,15 +221,7 @@ export default class Block {
   ): Line[] {
     const lines: Line[] = [];
 
-    if (
-      division === "TOP_BOT" ||
-      division === "TOP_RIGHT" ||
-      division === "LEFT_TOP" ||
-      division === "BOT_LEFT_TOP" ||
-      division === "LEFT_TOP_RIGHT" ||
-      division === "TOP_RIGHT_BOT" ||
-      division === "TOP_BOT_LEFT_RIGHT"
-    ) {
+    if (TOP_DIVISIONS.includes(division)) {
       const bufferGeometry = new BufferGeometry();
       const geometry = bufferGeometry.setFromPoints([
         new Vector3(0, 0, 0),
@@ -198,15 +230,7 @@ export default class Block {
       lines.push(new Line(geometry, material));
     }
 
-    if (
-      division === "LEFT_RIGHT" ||
-      division === "TOP_RIGHT" ||
-      division === "RIGHT_BOT" ||
-      division === "LEFT_TOP_RIGHT" ||
-      division === "TOP_RIGHT_BOT" ||
-      division === "RIGHT_BOT_LEFT" ||
-      division === "TOP_BOT_LEFT_RIGHT"
-    ) {
+    if (RIGHT_DIVISIONS.includes(division)) {
       const bufferGeometry = new BufferGeometry();
       const geometry = bufferGeometry.setFromPoints([
         new Vector3(0, 0, 0),
@@ -215,15 +239,7 @@ export default class Block {
       lines.push(new Line(geometry, material));
     }
 
-    if (
-      division === "TOP_BOT" ||
-      division === "RIGHT_BOT" ||
-      division === "BOT_LEFT" ||
-      division === "TOP_RIGHT_BOT" ||
-      division === "RIGHT_BOT_LEFT" ||
-      division === "BOT_LEFT_TOP" ||
-      division === "TOP_BOT_LEFT_RIGHT"
-    ) {
+    if (BOT_DIVISIONS.includes(division)) {
       const bufferGeometry = new BufferGeometry();
       const geometry = bufferGeometry.setFromPoints([
         new Vector3(0, 0, 0),
@@ -232,15 +248,7 @@ export default class Block {
       lines.push(new Line(geometry, material));
     }
 
-    if (
-      division === "LEFT_RIGHT" ||
-      division === "BOT_LEFT" ||
-      division === "LEFT_TOP" ||
-      division === "RIGHT_BOT_LEFT" ||
-      division === "BOT_LEFT_TOP" ||
-      division === "LEFT_TOP_RIGHT" ||
-      division === "TOP_BOT_LEFT_RIGHT"
-    ) {
+    if (LEFT_DIVISIONS.includes(division)) {
       const bufferGeometry = new BufferGeometry();
       const geometry = bufferGeometry.setFromPoints([
         new Vector3(0, 0, 0),
@@ -352,5 +360,10 @@ export default class Block {
 
   toggleSelected(selected: boolean) {
     this.outerLineMaterial.color.set(selected ? "white" : "gray");
+  }
+
+  setEletrified(value: boolean) {
+    this.isEletrified = value;
+    this.connectionLineMaterial.color.set(value ? "red" : "gray");
   }
 }
