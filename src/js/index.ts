@@ -125,6 +125,7 @@ const cube = new Cube({
 
 const mousePosition = new THREE.Vector2();
 let dragging: THREE.Object3D | undefined;
+let draggingInitialPosition = new THREE.Vector3();
 let pointerOffset = new THREE.Vector3();
 
 window.addEventListener("mousemove", function (e) {
@@ -142,13 +143,23 @@ window.addEventListener("mousemove", function (e) {
       // const gridRight = new THREE.Vector3(-1, 0, 0);
 
       const up = getGlobalUp(dragging.parent!);
-      dragging.position.set(
+      const pointerLocalPosition = new THREE.Vector3(
         (gridTransformPosition.x - hit.x / GRID_SIZE) * -up.y +
           (gridTransformPosition.y - hit.y / GRID_SIZE) * up.x -
           pointerOffset.x,
         (gridTransformPosition.y - hit.y / GRID_SIZE) * -up.y +
           (gridTransformPosition.x - hit.x / GRID_SIZE) * -up.x -
           pointerOffset.y,
+        0
+      );
+
+      const horizontal =
+        Math.abs(draggingInitialPosition.x - pointerLocalPosition.x) >
+        Math.abs(draggingInitialPosition.y - pointerLocalPosition.y);
+
+      dragging.position.set(
+        horizontal ? pointerLocalPosition.x : draggingInitialPosition.x,
+        horizontal ? draggingInitialPosition.y : pointerLocalPosition.y,
         0
       );
     }
@@ -172,6 +183,11 @@ window.addEventListener("mousedown", function (e) {
 
   if (blockIntersection) {
     dragging = blockIntersection.object;
+    draggingInitialPosition.set(
+      dragging.position.x,
+      dragging.position.y,
+      dragging.position.z
+    );
 
     const gridTransformPosition = dragging.parent!.getWorldPosition(
       new THREE.Vector3()
@@ -186,12 +202,12 @@ window.addEventListener("mousedown", function (e) {
         (gridTransformPosition.x - hit.x / GRID_SIZE) * -up.x,
       0
     );
+
     pointerOffset = new THREE.Vector3(
       pointerLocalPosition.x - dragging.position.x,
       pointerLocalPosition.y - dragging.position.y,
       0
     );
-    console.log("offset", pointerOffset);
   }
 });
 
