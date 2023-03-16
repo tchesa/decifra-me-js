@@ -7,12 +7,12 @@ export const GRID_SIZE = 4;
 const textureLoader = new TextureLoader();
 
 const positionByCubeFace: { [face in CubeFace]: [number, number, number] } = {
-  FRONT: [0, 0, 0.51],
-  RIGHT: [0.51, 0, 0],
-  BACK: [0, 0, -0.51],
-  LEFT: [-0.51, 0, 0],
-  TOP: [0, 0.51, 0],
-  BOT: [0, -0.51, 0],
+  FRONT: [0, 0, 0.5],
+  RIGHT: [0.5, 0, 0],
+  BACK: [0, 0, -0.5],
+  LEFT: [-0.5, 0, 0],
+  TOP: [0, 0.5, 0],
+  BOT: [0, -0.5, 0],
 };
 
 const rotationByCubeFace: { [face in CubeFace]: [number, number, number] } = {
@@ -50,7 +50,9 @@ export default class Grid {
     const planeGeometry = new PlaneGeometry();
     const planeMaterial = new MeshBasicMaterial({
       color: "yellow",
-      wireframe: true,
+      // wireframe: true,
+      transparent: true,
+      opacity: 0,
       // map: textureLoader.load(arrow),
     });
     const plane = new Mesh(planeGeometry, planeMaterial);

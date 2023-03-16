@@ -1,5 +1,8 @@
 import {
+  BufferGeometry,
   DirectionalLight,
+  Line,
+  LineBasicMaterial,
   Object3D,
   OrthographicCamera,
   Raycaster,
@@ -247,6 +250,18 @@ window.addEventListener("mouseup", function (e) {
 const raycaster = new Raycaster();
 
 // let drag = undefined
+
+// cube margin
+const cubeMargin = 0.05;
+const bufferGeometry = new BufferGeometry();
+const geometry = bufferGeometry.setFromPoints([
+  new Vector3(-GRID_SIZE / 2 - cubeMargin, -GRID_SIZE / 2 - cubeMargin, 0),
+  new Vector3(GRID_SIZE / 2 + cubeMargin, -GRID_SIZE / 2 - cubeMargin, 0),
+  new Vector3(GRID_SIZE / 2 + cubeMargin, GRID_SIZE / 2 + cubeMargin, 0),
+  new Vector3(-GRID_SIZE / 2 - cubeMargin, GRID_SIZE / 2 + cubeMargin, 0),
+  new Vector3(-GRID_SIZE / 2 - cubeMargin, -GRID_SIZE / 2 - cubeMargin, 0),
+]);
+window.scene.add(new Line(geometry, new LineBasicMaterial({ color: "gray" })));
 
 function animate(time: number) {
   renderer.render(window.scene, camera);

@@ -31,7 +31,9 @@ export default class Cube {
     const boxGeometry = new BoxGeometry();
     const boxMaterial = new MeshBasicMaterial({
       color: "white",
-      wireframe: true,
+      // wireframe: true,
+      transparent: true,
+      opacity: 0,
       // map: textureLoader.load(texture1),
     });
     const box = new Mesh(boxGeometry, boxMaterial);
