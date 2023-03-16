@@ -3,6 +3,8 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as dat from "dat.gui";
 import Cube from "./Cube";
 import { BLOCK_MESH_NAME } from "./Block";
+import { GRID_SIZE } from "./Grid";
+import { getGlobalUp } from "./utils";
 
 // import texture1 from "../textures/1.png";
 // import bg from "../textures/bg.jpeg";
@@ -136,13 +138,15 @@ window.addEventListener("mousemove", function (e) {
       const gridTransformPosition = dragging.parent!.getWorldPosition(
         new THREE.Vector3()
       );
-      const gridRight = new THREE.Vector3(-1, 0, 0);
+      // const gridRight = new THREE.Vector3(-1, 0, 0);
+
+      const up = getGlobalUp(dragging.parent!);
 
       dragging.position.set(
-        (gridTransformPosition.x - hit.x) * dragging.parent!.up.y +
-          (gridTransformPosition.y - hit.y) * gridRight.y,
-        (gridTransformPosition.y - hit.y) * gridRight.x +
-          (gridTransformPosition.x - hit.x) * dragging.parent!.up.x,
+        (gridTransformPosition.x - hit.x / GRID_SIZE) * -up.y +
+          (gridTransformPosition.y - hit.y / GRID_SIZE) * up.x,
+        (gridTransformPosition.y - hit.y / GRID_SIZE) * -up.y +
+          (gridTransformPosition.x - hit.x / GRID_SIZE) * -up.x,
         0
       );
     }
