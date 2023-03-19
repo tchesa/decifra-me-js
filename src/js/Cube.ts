@@ -49,10 +49,11 @@ export default class Cube {
           face,
           cube: this,
         });
-        this.grids[face] = grid;
-        this.blockCount += grid.blockList.length;
-        // this.mesh.children.push(grid.mesh);
-        // grid.mesh.parent = this.mesh;
+
+        if (grid.blockList.length > 0) {
+          this.grids[face] = grid;
+          this.blockCount += grid.blockList.length;
+        }
       }
     });
 

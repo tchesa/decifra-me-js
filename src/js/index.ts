@@ -89,6 +89,7 @@ window.scene.add(directionalLight);
 const cube = new Cube(stage);
 cube.shuffleAll();
 cube.checkEletrified();
+console.log(cube.grids);
 // const cube = new Cube({
 //   FRONT: [
 //     [
