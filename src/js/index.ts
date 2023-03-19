@@ -59,7 +59,7 @@ const camera = new OrthographicCamera(
   0.3,
   1000
 );
-// camera.rotateZ(Math.PI / 4);
+camera.rotateZ(-Math.PI / 4);
 camera.position.z = 5;
 
 // const textureLoader = new TextureLoader();
