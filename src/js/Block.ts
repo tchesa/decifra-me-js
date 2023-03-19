@@ -486,6 +486,14 @@ export default class Block {
           true
         );
 
+        window.animations = window.animations.filter(
+          (animation) =>
+            !(
+              animation.id === this.animatedEmitterLineAnimation ||
+              animation.id === this.animatedEmitterLineMaterialAnimation
+            )
+        );
+
         this.animatedEmitterLineAnimation = scaleAnimation.id;
         this.animatedEmitterLineMaterialAnimation = opacityAnimation.id;
         window.animations.push(scaleAnimation, opacityAnimation);
@@ -498,8 +506,6 @@ export default class Block {
             animation.loop = false;
           }
         });
-        this.animatedEmitterLineAnimation = undefined;
-        this.animatedEmitterLineMaterialAnimation = undefined;
       }
     }
   }
