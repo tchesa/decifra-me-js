@@ -58,6 +58,8 @@ export default class Cube {
 
     if (!this.emitter) {
       console.warn("Emitter not found");
+    } else {
+      this.checkEletrified();
     }
   }
 

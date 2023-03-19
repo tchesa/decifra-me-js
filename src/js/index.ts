@@ -16,14 +16,14 @@ import {
   Vector3,
   WebGLRenderer,
 } from "three";
-import * as dat from "dat.gui";
+// import * as dat from "dat.gui";
 import Cube, { CUBE_MESH_NAME } from "./Cube";
 import Block, { BLOCK_MESH_NAME } from "./Block";
 import { GRID_MESH_NAME, GRID_SIZE } from "./Grid";
 import { getGlobalUp } from "./utils";
 import { clamp } from "three/src/math/MathUtils";
 
-// import stage1 from "./stages/stage1";
+import stage from "./stages/stage1";
 // import stage2 from "./stages/stage2";
 // import stage3 from "./stages/stage3";
 // import stage4 from "./stages/stage4";
@@ -31,7 +31,7 @@ import { clamp } from "three/src/math/MathUtils";
 // import stage6 from "./stages/stage6";
 // import stage7 from "./stages/stage7";
 // import stage8 from "./stages/stage8";
-import stage9 from "./stages/stage9";
+// import stage9 from "./stages/stage9";
 
 // import texture1 from "../textures/1.png";
 // import bg from "../textures/bg.jpeg";
@@ -83,7 +83,7 @@ window.scene.add(directionalLight);
 // const box = new Mesh(boxGeometry, boxMaterial);
 // box.scale.set(4, 4, 4);
 
-const cube = new Cube(stage9);
+const cube = new Cube(stage);
 // const cube = new Cube({
 //   FRONT: [
 //     [
@@ -355,65 +355,73 @@ enum Triangle {
   VERTICAL = "TRIANGLE_VERTICAL",
 }
 
-const rightTriangleShape = new Shape();
-rightTriangleShape.moveTo(0, 0);
-rightTriangleShape.lineTo(2 * triangleScale, -2 * triangleScale);
-rightTriangleShape.lineTo(2 * triangleScale, 2 * triangleScale);
+if (
+  cube.grids.RIGHT ||
+  cube.grids.LEFT ||
+  cube.grids.TOP ||
+  cube.grids.BOT ||
+  cube.grids.BACK
+) {
+  const rightTriangleShape = new Shape();
+  rightTriangleShape.moveTo(0, 0);
+  rightTriangleShape.lineTo(2 * triangleScale, -2 * triangleScale);
+  rightTriangleShape.lineTo(2 * triangleScale, 2 * triangleScale);
 
-const rightTriangleGeometry = new ShapeGeometry(rightTriangleShape);
-const triangleMaterial = new MeshBasicMaterial({
-  color: "pink",
-  wireframe: true,
-  transparent: true,
-  opacity: 0,
-});
-const rightTriangle = new Mesh(rightTriangleGeometry, triangleMaterial);
-rightTriangle.name = Triangle.HORIZONTAL;
-window.scene.add(rightTriangle);
+  const rightTriangleGeometry = new ShapeGeometry(rightTriangleShape);
+  const triangleMaterial = new MeshBasicMaterial({
+    color: "pink",
+    wireframe: true,
+    transparent: true,
+    opacity: 0,
+  });
+  const rightTriangle = new Mesh(rightTriangleGeometry, triangleMaterial);
+  rightTriangle.name = Triangle.HORIZONTAL;
+  window.scene.add(rightTriangle);
 
-const leftTriangleShape = new Shape();
-leftTriangleShape.moveTo(0, 0);
-leftTriangleShape.lineTo(-2 * triangleScale, -2 * triangleScale);
-leftTriangleShape.lineTo(-2 * triangleScale, 2 * triangleScale);
+  const leftTriangleShape = new Shape();
+  leftTriangleShape.moveTo(0, 0);
+  leftTriangleShape.lineTo(-2 * triangleScale, -2 * triangleScale);
+  leftTriangleShape.lineTo(-2 * triangleScale, 2 * triangleScale);
 
-const leftTriangleGeometry = new ShapeGeometry(leftTriangleShape);
-const leftTriangle = new Mesh(leftTriangleGeometry, triangleMaterial);
-leftTriangle.name = Triangle.HORIZONTAL;
-window.scene.add(leftTriangle);
+  const leftTriangleGeometry = new ShapeGeometry(leftTriangleShape);
+  const leftTriangle = new Mesh(leftTriangleGeometry, triangleMaterial);
+  leftTriangle.name = Triangle.HORIZONTAL;
+  window.scene.add(leftTriangle);
 
-const topTriangleShape = new Shape();
-topTriangleShape.moveTo(0, 0);
-topTriangleShape.lineTo(2 * triangleScale, 2 * triangleScale);
-topTriangleShape.lineTo(-2 * triangleScale, 2 * triangleScale);
+  const topTriangleShape = new Shape();
+  topTriangleShape.moveTo(0, 0);
+  topTriangleShape.lineTo(2 * triangleScale, 2 * triangleScale);
+  topTriangleShape.lineTo(-2 * triangleScale, 2 * triangleScale);
 
-const topTriangleGeometry = new ShapeGeometry(topTriangleShape);
-const topTriangle = new Mesh(topTriangleGeometry, triangleMaterial);
-topTriangle.name = Triangle.VERTICAL;
-window.scene.add(topTriangle);
+  const topTriangleGeometry = new ShapeGeometry(topTriangleShape);
+  const topTriangle = new Mesh(topTriangleGeometry, triangleMaterial);
+  topTriangle.name = Triangle.VERTICAL;
+  window.scene.add(topTriangle);
 
-const bottomTriangleShape = new Shape();
-bottomTriangleShape.moveTo(0, 0);
-bottomTriangleShape.lineTo(2 * triangleScale, -2 * triangleScale);
-bottomTriangleShape.lineTo(-2 * triangleScale, -2 * triangleScale);
+  const bottomTriangleShape = new Shape();
+  bottomTriangleShape.moveTo(0, 0);
+  bottomTriangleShape.lineTo(2 * triangleScale, -2 * triangleScale);
+  bottomTriangleShape.lineTo(-2 * triangleScale, -2 * triangleScale);
 
-const bottomTriangleGeometry = new ShapeGeometry(bottomTriangleShape);
-const bottomTriangle = new Mesh(bottomTriangleGeometry, triangleMaterial);
-bottomTriangle.name = Triangle.VERTICAL;
-window.scene.add(bottomTriangle);
+  const bottomTriangleGeometry = new ShapeGeometry(bottomTriangleShape);
+  const bottomTriangle = new Mesh(bottomTriangleGeometry, triangleMaterial);
+  bottomTriangle.name = Triangle.VERTICAL;
+  window.scene.add(bottomTriangle);
+}
 
 function animate(time: number) {
   renderer.render(window.scene, camera);
 }
 renderer.setAnimationLoop(animate);
 
-const gui = new dat.GUI();
-const options = {
-  cubeX: 0,
-  cubeY: 0,
-};
-gui.add(options, "cubeX", 0, 2).onChange(function (e) {
-  cube.mesh.rotation.x = e * Math.PI;
-});
-gui.add(options, "cubeY", 0, 2).onChange(function (e) {
-  cube.mesh.rotation.y = e * Math.PI;
-});
+// const gui = new dat.GUI();
+// const options = {
+//   cubeX: 0,
+//   cubeY: 0,
+// };
+// gui.add(options, "cubeX", 0, 2).onChange(function (e) {
+//   cube.mesh.rotation.x = e * Math.PI;
+// });
+// gui.add(options, "cubeY", 0, 2).onChange(function (e) {
+//   cube.mesh.rotation.y = e * Math.PI;
+// });
