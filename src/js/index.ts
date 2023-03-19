@@ -252,13 +252,13 @@ window.addEventListener("mousemove", function (e) {
 window.addEventListener("mousedown", function (e) {
   raycaster.setFromCamera(mousePosition, camera);
   const intersects = raycaster.intersectObjects(window.scene.children);
-  console.log(
-    `${
-      intersects.filter(
-        (intersect) => intersect.object.name === BLOCK_MESH_NAME
-      ).length
-    } block(s) detected`
-  );
+  // console.log(
+  //   `${
+  //     intersects.filter(
+  //       (intersect) => intersect.object.name === BLOCK_MESH_NAME
+  //     ).length
+  //   } block(s) detected`
+  // );
 
   const blockIntersection = intersects.find(
     (intersect) => intersect.object.name === BLOCK_MESH_NAME
