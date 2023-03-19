@@ -7,6 +7,7 @@ import Block, {
   TOP_DIVISIONS,
 } from "./Block";
 import Grid, { FixedGrid, GRID_SIZE } from "./Grid";
+import { multifaceConnectionHelper } from "./utils";
 
 export type CubeFace = "FRONT" | "BACK" | "LEFT" | "RIGHT" | "TOP" | "BOT";
 const cubeFaces: CubeFace[] = ["FRONT", "BACK", "LEFT", "RIGHT", "TOP", "BOT"];
@@ -81,18 +82,39 @@ export default class Cube {
 
     while (queue.length > 0) {
       const [current] = queue.splice(0, 1);
-      // console.log(current.row, current.column);
 
       // top
-      if (current.row > 0 && TOP_DIVISIONS.includes(current.division)) {
+      if (TOP_DIVISIONS.includes(current.division)) {
         const topBlock =
-          this.grids[current.grid.face]!.blockGrid[current.row - 1][
-            current.column
-          ];
+          current.row > 0
+            ? this.grids[current.grid.face]!.blockGrid[current.row - 1][
+                current.column
+              ]
+            : this.grids[
+                multifaceConnectionHelper[current.grid.face][current.row][
+                  current.column
+                ]!.TOP![0]
+              ]?.blockGrid[
+                multifaceConnectionHelper[current.grid.face][current.row][
+                  current.column
+                ]!.TOP![1]
+              ][
+                multifaceConnectionHelper[current.grid.face][current.row][
+                  current.column
+                ]!.TOP![2]
+              ];
+
+        const neighbourAllowedDivisions =
+          current.row > 0
+            ? BOT_DIVISIONS
+            : multifaceConnectionHelper[current.grid.face][current.row][
+                current.column
+              ]!.TOP![3];
+
         if (
           topBlock &&
           !visited[topBlock.mesh.uuid] &&
-          BOT_DIVISIONS.includes(topBlock.division)
+          neighbourAllowedDivisions.includes(topBlock.division)
         ) {
           topBlock.setEletrified(true);
           // eletrifiedCount++
@@ -102,18 +124,37 @@ export default class Cube {
       }
 
       // bottom
-      if (
-        current.row < GRID_SIZE - 1 &&
-        BOT_DIVISIONS.includes(current.division)
-      ) {
+      if (BOT_DIVISIONS.includes(current.division)) {
         const botBlock =
-          this.grids[current.grid.face]!.blockGrid[current.row + 1][
-            current.column
-          ];
+          current.row < GRID_SIZE - 1
+            ? this.grids[current.grid.face]!.blockGrid[current.row + 1][
+                current.column
+              ]
+            : this.grids[
+                multifaceConnectionHelper[current.grid.face][current.row][
+                  current.column
+                ]!.BOT![0]
+              ]?.blockGrid[
+                multifaceConnectionHelper[current.grid.face][current.row][
+                  current.column
+                ]!.BOT![1]
+              ][
+                multifaceConnectionHelper[current.grid.face][current.row][
+                  current.column
+                ]!.BOT![2]
+              ];
+
+        const neighbourAllowedDivisions =
+          current.row < GRID_SIZE - 1
+            ? TOP_DIVISIONS
+            : multifaceConnectionHelper[current.grid.face][current.row][
+                current.column
+              ]!.BOT![3];
+
         if (
           botBlock &&
           !visited[botBlock.mesh.uuid] &&
-          TOP_DIVISIONS.includes(botBlock.division)
+          neighbourAllowedDivisions.includes(botBlock.division)
         ) {
           botBlock.setEletrified(true);
           // eletrifiedCount++
@@ -123,15 +164,37 @@ export default class Cube {
       }
 
       // left
-      if (current.column > 0 && LEFT_DIVISIONS.includes(current.division)) {
+      if (LEFT_DIVISIONS.includes(current.division)) {
         const leftBlock =
-          this.grids[current.grid.face]!.blockGrid[current.row][
-            current.column - 1
-          ];
+          current.column > 0
+            ? this.grids[current.grid.face]!.blockGrid[current.row][
+                current.column - 1
+              ]
+            : this.grids[
+                multifaceConnectionHelper[current.grid.face][current.row][
+                  current.column
+                ]!.LEFT![0]
+              ]?.blockGrid[
+                multifaceConnectionHelper[current.grid.face][current.row][
+                  current.column
+                ]!.LEFT![1]
+              ][
+                multifaceConnectionHelper[current.grid.face][current.row][
+                  current.column
+                ]!.LEFT![2]
+              ];
+
+        const neighbourAllowedDivisions =
+          current.column > 0
+            ? RIGHT_DIVISIONS
+            : multifaceConnectionHelper[current.grid.face][current.row][
+                current.column
+              ]!.LEFT![3];
+
         if (
           leftBlock &&
           !visited[leftBlock.mesh.uuid] &&
-          RIGHT_DIVISIONS.includes(leftBlock.division)
+          neighbourAllowedDivisions.includes(leftBlock.division)
         ) {
           leftBlock.setEletrified(true);
           // eletrifiedCount++
@@ -141,18 +204,37 @@ export default class Cube {
       }
 
       // right
-      if (
-        current.column < GRID_SIZE - 1 &&
-        RIGHT_DIVISIONS.includes(current.division)
-      ) {
+      if (RIGHT_DIVISIONS.includes(current.division)) {
         const rightBlock =
-          this.grids[current.grid.face]!.blockGrid[current.row][
-            current.column + 1
-          ];
+          current.column < GRID_SIZE - 1
+            ? this.grids[current.grid.face]!.blockGrid[current.row][
+                current.column + 1
+              ]
+            : this.grids[
+                multifaceConnectionHelper[current.grid.face][current.row][
+                  current.column
+                ]!.RIGHT![0]
+              ]?.blockGrid[
+                multifaceConnectionHelper[current.grid.face][current.row][
+                  current.column
+                ]!.RIGHT![1]
+              ][
+                multifaceConnectionHelper[current.grid.face][current.row][
+                  current.column
+                ]!.RIGHT![2]
+              ];
+
+        const neighbourAllowedDivisions =
+          current.column < GRID_SIZE - 1
+            ? LEFT_DIVISIONS
+            : multifaceConnectionHelper[current.grid.face][current.row][
+                current.column
+              ]!.RIGHT![3];
+
         if (
           rightBlock &&
           !visited[rightBlock.mesh.uuid] &&
-          LEFT_DIVISIONS.includes(rightBlock.division)
+          neighbourAllowedDivisions.includes(rightBlock.division)
         ) {
           rightBlock.setEletrified(true);
           // eletrifiedCount++
