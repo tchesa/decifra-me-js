@@ -23,15 +23,16 @@ import { GRID_MESH_NAME, GRID_SIZE } from "./Grid";
 import { getGlobalUp } from "./utils";
 import { clamp } from "three/src/math/MathUtils";
 
-import stage from "./stages/stage1";
-// import stage2 from "./stages/stage2";
-// import stage3 from "./stages/stage3";
-// import stage4 from "./stages/stage4";
-// import stage5 from "./stages/stage5";
-// import stage6 from "./stages/stage6";
-// import stage7 from "./stages/stage7";
-// import stage8 from "./stages/stage8";
-// import stage9 from "./stages/stage9";
+// import stage from "./stages/stage1";
+// import stage from "./stages/stage2";
+// import stage from "./stages/stage3";
+// import stage from "./stages/stage4";
+import stage from "./stages/stage5";
+import { RotationAnimation } from "./Animation";
+// import stage from "./stages/stage6";
+// import stage from "./stages/stage7";
+// import stage from "./stages/stage8";
+// import stage from "./stages/stage9";
 
 // import texture1 from "../textures/1.png";
 // import bg from "../textures/bg.jpeg";
@@ -44,6 +45,8 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 window.scene = new Scene();
+window.animations = [];
+window.time = 0;
 
 // const camera = new PerspectiveCamera(
 //   75,
@@ -249,7 +252,7 @@ window.addEventListener("mousemove", function (e) {
   }
 });
 
-window.addEventListener("mousedown", function (e) {
+window.addEventListener("mousedown", function () {
   raycaster.setFromCamera(mousePosition, camera);
   const intersects = raycaster.intersectObjects(window.scene.children);
   // console.log(
@@ -316,7 +319,7 @@ window.addEventListener("mousedown", function (e) {
   }
 });
 
-window.addEventListener("mouseup", function (e) {
+window.addEventListener("mouseup", function () {
   if (dragging && Block.map[dragging.uuid]) {
     Block.map[dragging.uuid].toggleSelected(false);
     Block.map[dragging!.uuid].snapPosition();
@@ -331,11 +334,24 @@ window.addEventListener("mouseup", function (e) {
     // console.log(a, b, c, d);
     cube.checkEletrified();
   } else if (rotating) {
-    cube.mesh.rotation.set(
-      (Math.round((cube.mesh.rotation.x / Math.PI) * 2) / 2) * Math.PI,
-      (Math.round((cube.mesh.rotation.y / Math.PI) * 2) / 2) * Math.PI,
-      (Math.round((cube.mesh.rotation.z / Math.PI) * 2) / 2) * Math.PI,
-      cubeInitialRotation.order
+    // cube.mesh.rotation.set(
+    //   (Math.round((cube.mesh.rotation.x / Math.PI) * 2) / 2) * Math.PI,
+    //   (Math.round((cube.mesh.rotation.y / Math.PI) * 2) / 2) * Math.PI,
+    //   (Math.round((cube.mesh.rotation.z / Math.PI) * 2) / 2) * Math.PI,
+    //   cubeInitialRotation.order
+    // );
+    this.window.animations.push(
+      new RotationAnimation(
+        cube.mesh,
+        new Euler(
+          (Math.round((cube.mesh.rotation.x / Math.PI) * 2) / 2) * Math.PI,
+          (Math.round((cube.mesh.rotation.y / Math.PI) * 2) / 2) * Math.PI,
+          (Math.round((cube.mesh.rotation.z / Math.PI) * 2) / 2) * Math.PI,
+          cubeInitialRotation.order
+        ),
+        300,
+        "easeOutCubic"
+      )
     );
   }
 
@@ -421,8 +437,15 @@ if (
 }
 
 function animate(time: number) {
+  window.time = time;
+
+  window.animations = (window.animations || []).filter(
+    (animation) => !animation.run(time)
+  );
+
   renderer.render(window.scene, camera);
 }
+
 renderer.setAnimationLoop(animate);
 
 // const gui = new dat.GUI();

@@ -1,4 +1,5 @@
 import { Scene } from "three";
+import Animation from "./js/Animation";
 
 declare module "*.png" {
   const path: string;
@@ -13,5 +14,7 @@ declare module "*.jpeg" {
 declare global {
   interface Window {
     scene: Scene;
+    animations: Animation[];
+    time: number;
   }
 }

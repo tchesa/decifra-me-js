@@ -7,6 +7,7 @@ import {
   PlaneGeometry,
   Vector3,
 } from "three";
+import { PositionAnimation } from "./Animation";
 import Grid, { GRID_SIZE } from "./Grid";
 
 export type BlockPortDivision =
@@ -250,10 +251,22 @@ export default class Block {
     const newRow = Math.round(
       (1.5 / GRID_SIZE - this.mesh.position.y) * GRID_SIZE
     );
-    this.mesh.position.set(
-      (-1.5 + newColumn) / GRID_SIZE,
-      (1.5 - newRow) / GRID_SIZE,
-      0
+    // this.mesh.position.set(
+    //   (-1.5 + newColumn) / GRID_SIZE,
+    //   (1.5 - newRow) / GRID_SIZE,
+    //   0
+    // );
+    window.animations.push(
+      new PositionAnimation(
+        this.mesh,
+        new Vector3(
+          (-1.5 + newColumn) / GRID_SIZE,
+          (1.5 - newRow) / GRID_SIZE,
+          0
+        ),
+        150,
+        "easeOutCubic"
+      )
     );
 
     if (newRow !== this.row || newColumn !== this.column) {
