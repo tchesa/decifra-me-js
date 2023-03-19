@@ -1,18 +1,12 @@
-import {
-  BoxGeometry,
-  Mesh,
-  MeshBasicMaterial,
-  MeshStandardMaterial,
-} from "three";
+import { BoxGeometry, Mesh, MeshBasicMaterial } from "three";
 import Block, {
   BlockOptions,
-  BlockSetup,
   BOT_DIVISIONS,
   LEFT_DIVISIONS,
   RIGHT_DIVISIONS,
   TOP_DIVISIONS,
 } from "./Block";
-import Grid, { FixedGrid, GridSetup, GRID_SIZE } from "./Grid";
+import Grid, { FixedGrid, GRID_SIZE } from "./Grid";
 
 export type CubeFace = "FRONT" | "BACK" | "LEFT" | "RIGHT" | "TOP" | "BOT";
 const cubeFaces: CubeFace[] = ["FRONT", "BACK", "LEFT", "RIGHT", "TOP", "BOT"];
@@ -20,6 +14,8 @@ const cubeFaces: CubeFace[] = ["FRONT", "BACK", "LEFT", "RIGHT", "TOP", "BOT"];
 export type CubeSetup = Partial<{
   [face in CubeFace]: FixedGrid<BlockOptions>;
 }>;
+
+export const CUBE_MESH_NAME = "CUBE";
 
 export default class Cube {
   grids: Partial<{ [face in CubeFace]: Grid }>;
@@ -38,6 +34,7 @@ export default class Cube {
     });
     const box = new Mesh(boxGeometry, boxMaterial);
     box.scale.set(GRID_SIZE, GRID_SIZE, GRID_SIZE);
+    box.name = CUBE_MESH_NAME;
     this.mesh = box;
     window.scene.add(box);
 

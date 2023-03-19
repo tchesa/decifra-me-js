@@ -17,9 +17,9 @@ import {
   WebGLRenderer,
 } from "three";
 import * as dat from "dat.gui";
-import Cube from "./Cube";
+import Cube, { CUBE_MESH_NAME } from "./Cube";
 import Block, { BLOCK_MESH_NAME } from "./Block";
-import { GRID_SIZE } from "./Grid";
+import { GRID_MESH_NAME, GRID_SIZE } from "./Grid";
 import { getGlobalUp } from "./utils";
 import { clamp } from "three/src/math/MathUtils";
 
@@ -74,16 +74,21 @@ window.scene.add(directionalLight);
 // box.scale.set(4, 4, 4);
 const cube = new Cube({
   FRONT: [
-    [{ division: "LEFT_RIGHT" }, undefined, undefined, undefined],
+    [
+      { division: "LEFT_RIGHT", isEmitter: false },
+      undefined,
+      undefined,
+      undefined,
+    ],
     [undefined, undefined, undefined, undefined],
-    // [
-    //   { division: "LEFT_RIGHT" },
-    //   { division: "LEFT_RIGHT" },
-    //   // { division: "LEFT_RIGHT" },
-    //   undefined,
-    //   { division: "BOT_LEFT_TOP", isEmitter: true, isStatic: true },
-    // ],
-    [undefined, undefined, undefined, undefined],
+    [
+      { division: "LEFT_RIGHT" },
+      { division: "LEFT_RIGHT" },
+      // { division: "LEFT_RIGHT" },
+      undefined,
+      { division: "BOT_LEFT_TOP", isEmitter: true, isStatic: true },
+    ],
+    // [undefined, undefined, undefined, undefined],
     [undefined, undefined, undefined, undefined],
   ],
   RIGHT: [
@@ -101,13 +106,13 @@ const cube = new Cube({
   BACK: [
     [undefined, undefined, { division: "LEFT_RIGHT" }, undefined],
     [undefined, undefined, undefined, undefined],
-    // [
-    //   { division: "LEFT_RIGHT" },
-    //   { division: "LEFT_RIGHT" },
-    //   { division: "LEFT_RIGHT" },
-    //   { division: "BOT_LEFT_TOP", isEmitter: true },
-    // ],
-    [undefined, undefined, undefined, undefined],
+    [
+      { division: "LEFT_RIGHT" },
+      { division: "LEFT_RIGHT" },
+      { division: "LEFT_RIGHT" },
+      { division: "BOT_LEFT_TOP", isEmitter: true },
+    ],
+    // [undefined, undefined, undefined, undefined],
     [undefined, undefined, undefined, undefined],
   ],
   LEFT: [
@@ -119,6 +124,7 @@ const cube = new Cube({
       { division: "LEFT_RIGHT" },
       { division: "BOT_LEFT_TOP", isEmitter: true },
     ],
+    // [undefined, undefined, undefined, undefined],
     [undefined, undefined, undefined, undefined],
   ],
   TOP: [
@@ -130,6 +136,7 @@ const cube = new Cube({
       { division: "LEFT_RIGHT" },
       { division: "BOT_LEFT_TOP", isEmitter: true },
     ],
+    // [undefined, undefined, undefined, undefined],
     [undefined, undefined, undefined, undefined],
   ],
   BOT: [
@@ -141,6 +148,7 @@ const cube = new Cube({
       { division: "LEFT_RIGHT" },
       { division: "BOT_LEFT_TOP", isEmitter: true },
     ],
+    // [undefined, undefined, undefined, undefined],
     [undefined, undefined, undefined, undefined],
   ],
 });
@@ -161,8 +169,11 @@ window.addEventListener("mousemove", function (e) {
   if (dragging) {
     raycaster.setFromCamera(mousePosition, camera);
     const intersects = raycaster.intersectObjects(window.scene.children, false);
-    if (intersects.length > 0) {
-      const hit = intersects[0].point;
+    const intersectedCube = intersects.find(
+      (intersect) => intersect.object.name === CUBE_MESH_NAME
+    );
+    if (intersectedCube) {
+      const hit = intersectedCube.point;
       const gridTransformPosition = dragging.parent!.getWorldPosition(
         new Vector3()
       );
@@ -225,7 +236,6 @@ window.addEventListener("mousemove", function (e) {
 });
 
 window.addEventListener("mousedown", function (e) {
-  // console.log(mousePosition);
   raycaster.setFromCamera(mousePosition, camera);
   const intersects = raycaster.intersectObjects(window.scene.children);
   console.log(
@@ -235,6 +245,7 @@ window.addEventListener("mousedown", function (e) {
       ).length
     } block(s) detected`
   );
+
   const blockIntersection = intersects.find(
     (intersect) => intersect.object.name === BLOCK_MESH_NAME
   );
@@ -245,38 +256,43 @@ window.addEventListener("mousedown", function (e) {
       intersect.object.name === Triangle.HORIZONTAL
   );
 
-  if (
-    blockIntersection &&
-    Block.map[blockIntersection.object.uuid] &&
-    !Block.map[blockIntersection.object.uuid].isStatic
-  ) {
-    dragging = blockIntersection.object;
-    Block.map[blockIntersection.object.uuid].toggleSelected(true);
-    draggingInitialPosition.set(
-      dragging.position.x,
-      dragging.position.y,
-      dragging.position.z
-    );
+  const gridIntersection = intersects.find(
+    (intersect) => intersect.object.name === GRID_MESH_NAME
+  );
 
-    const gridTransformPosition = dragging.parent!.getWorldPosition(
-      new Vector3()
-    );
-    const hit = intersects[0].point;
-    const up = getGlobalUp(dragging.parent!);
+  if (blockIntersection) {
+    if (
+      Block.map[blockIntersection.object.uuid] &&
+      !Block.map[blockIntersection.object.uuid].isStatic
+    ) {
+      dragging = blockIntersection.object;
+      Block.map[blockIntersection.object.uuid].toggleSelected(true);
+      draggingInitialPosition.set(
+        dragging.position.x,
+        dragging.position.y,
+        dragging.position.z
+      );
 
-    const pointerLocalPosition = new Vector3(
-      (gridTransformPosition.x - hit.x / GRID_SIZE) * -up.y +
-        (gridTransformPosition.y - hit.y / GRID_SIZE) * up.x,
-      (gridTransformPosition.y - hit.y / GRID_SIZE) * -up.y +
-        (gridTransformPosition.x - hit.x / GRID_SIZE) * -up.x,
-      0
-    );
+      const gridTransformPosition = dragging.parent!.getWorldPosition(
+        new Vector3()
+      );
+      const hit = gridIntersection!.point;
+      const up = getGlobalUp(dragging.parent!);
 
-    pointerOffset = new Vector3(
-      pointerLocalPosition.x - dragging.position.x,
-      pointerLocalPosition.y - dragging.position.y,
-      0
-    );
+      const pointerLocalPosition = new Vector3(
+        (gridTransformPosition.x - hit.x / GRID_SIZE) * -up.y +
+          (gridTransformPosition.y - hit.y / GRID_SIZE) * up.x,
+        (gridTransformPosition.y - hit.y / GRID_SIZE) * -up.y +
+          (gridTransformPosition.x - hit.x / GRID_SIZE) * -up.x,
+        0
+      );
+
+      pointerOffset = new Vector3(
+        pointerLocalPosition.x - dragging.position.x,
+        pointerLocalPosition.y - dragging.position.y,
+        0
+      );
+    }
   } else if (triangleIntersection) {
     const hit = triangleIntersection.point;
     rotating = true;
@@ -378,14 +394,14 @@ function animate(time: number) {
 }
 renderer.setAnimationLoop(animate);
 
-// const gui = new dat.GUI();
-// const options = {
-//   cubeX: 0,
-//   cubeY: 0,
-// };
-// gui.add(options, "cubeX", 0, 2).onChange(function (e) {
-//   cube.mesh.rotation.x = e * Math.PI;
-// });
-// gui.add(options, "cubeY", 0, 2).onChange(function (e) {
-//   cube.mesh.rotation.y = e * Math.PI;
-// });
+const gui = new dat.GUI();
+const options = {
+  cubeX: 0,
+  cubeY: 0,
+};
+gui.add(options, "cubeX", 0, 2).onChange(function (e) {
+  cube.mesh.rotation.x = e * Math.PI;
+});
+gui.add(options, "cubeY", 0, 2).onChange(function (e) {
+  cube.mesh.rotation.y = e * Math.PI;
+});

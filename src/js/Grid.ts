@@ -1,9 +1,10 @@
 import { Mesh, MeshBasicMaterial, PlaneGeometry, TextureLoader } from "three";
-import Block, { BlockOptions, BlockSetup } from "./Block";
+import Block, { BlockOptions } from "./Block";
 import Cube, { CubeFace } from "./Cube";
 import arrow from "../textures/arrow.webp";
 
 export const GRID_SIZE = 4;
+export const GRID_MESH_NAME = "GRID";
 const textureLoader = new TextureLoader();
 
 const positionByCubeFace: { [face in CubeFace]: [number, number, number] } = {
@@ -61,6 +62,7 @@ export default class Grid {
     plane.rotation.set(...rotationByCubeFace[setup.face]);
     // plane.parent = setup.parent;
     // setup.parent.children.push(plane);
+    plane.name = GRID_MESH_NAME;
     setup.cube.mesh.add(plane);
     this.cube = setup.cube;
     this.mesh = plane;
