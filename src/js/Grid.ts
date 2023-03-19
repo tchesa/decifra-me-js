@@ -6,6 +6,7 @@ import arrow from "../textures/arrow.webp";
 export const GRID_SIZE = 4;
 export const GRID_MESH_NAME = "GRID";
 const textureLoader = new TextureLoader();
+const SHUFFLE_ITERACTIONS = 20;
 
 const positionByCubeFace: { [face in CubeFace]: [number, number, number] } = {
   FRONT: [0, 0, 0.5],
@@ -98,7 +99,57 @@ export default class Grid {
     newRow: number,
     newColumn: number
   ) {
+    if (oldRow === newRow && oldColumn === newColumn) return;
+
     this.blockGrid[newRow][newColumn] = this.blockGrid[oldRow][oldColumn];
     this.blockGrid[oldRow][oldColumn] = undefined;
+  }
+
+  getBlockMovementRange(row: number, column: number) {
+    let minRow = row;
+    let maxRow = row;
+    let minCol = column;
+    let maxCol = column;
+
+    while (minRow > 0 && !this.blockGrid[minRow - 1][column]) minRow--;
+    while (maxRow < GRID_SIZE - 1 && !this.blockGrid[maxRow + 1][column])
+      maxRow++;
+    while (minCol > 0 && !this.blockGrid[row][minCol - 1]) minCol--;
+    while (maxCol < GRID_SIZE - 1 && !this.blockGrid[row][maxCol + 1]) maxCol++;
+
+    return [minRow, maxRow, minCol, maxCol];
+  }
+
+  shuffle() {
+    const nonStaticBlocks = this.blockList.filter((block) => !block.isStatic);
+
+    for (let i = 0; i < SHUFFLE_ITERACTIONS; i++) {
+      const block =
+        nonStaticBlocks[Math.floor(Math.random() * nonStaticBlocks.length)];
+
+      const [minRow, maxRow, minCol, maxCol] = this.getBlockMovementRange(
+        block.row,
+        block.column
+      );
+
+      const horizontal =
+        minRow === maxRow
+          ? true
+          : minCol === maxCol
+          ? false
+          : Math.random() < 0.5;
+
+      const newRow = horizontal
+        ? block.row
+        : Math.floor(Math.random() * (maxRow - minRow + 1) + minRow);
+      const newCol = horizontal
+        ? Math.floor(Math.random() * (maxCol - minCol + 1) + minCol)
+        : block.column;
+
+      this.updateBlockPosition(block.row, block.column, newRow, newCol);
+      block.row = newRow;
+      block.column = newCol;
+      block.updateMeshPosiiton();
+    }
   }
 }

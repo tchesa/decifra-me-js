@@ -84,6 +84,8 @@ window.scene.add(directionalLight);
 // box.scale.set(4, 4, 4);
 
 const cube = new Cube(stage);
+cube.shuffleAll();
+cube.checkEletrified();
 // const cube = new Cube({
 //   FRONT: [
 //     [
@@ -318,6 +320,15 @@ window.addEventListener("mouseup", function (e) {
   if (dragging && Block.map[dragging.uuid]) {
     Block.map[dragging.uuid].toggleSelected(false);
     Block.map[dragging!.uuid].snapPosition();
+    const [a, b, c, d] = Block.map[dragging!.uuid].grid.getBlockMovementRange(
+      Block.map[dragging!.uuid].row,
+      Block.map[dragging!.uuid].column
+    );
+    // console.log(
+    //   Block.map[dragging!.uuid].row,
+    //   Block.map[dragging!.uuid].column
+    // );
+    // console.log(a, b, c, d);
     cube.checkEletrified();
   } else if (rotating) {
     cube.mesh.rotation.set(

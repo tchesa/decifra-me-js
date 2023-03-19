@@ -107,6 +107,9 @@ export type BlockSetup = BlockOptions & {
   grid: Grid;
 };
 
+const calculateLocalPosition = (row: number, column: number) =>
+  new Vector3((-1.5 + column) / GRID_SIZE, (1.5 - row) / GRID_SIZE, 0);
+
 export default class Block {
   division: BlockPortDivision;
   isStatic: boolean;
@@ -141,11 +144,8 @@ export default class Block {
     const plane = new Mesh(planeGeometry, planeMaterial);
     plane.name = BLOCK_MESH_NAME;
     plane.scale.set(1 / GRID_SIZE, 1 / GRID_SIZE, 1);
-    plane.position.set(
-      (-1.5 + setup.column) / GRID_SIZE,
-      (1.5 - setup.row) / GRID_SIZE,
-      0
-    );
+    const planePosition = calculateLocalPosition(setup.row, setup.column);
+    plane.position.set(planePosition.x, planePosition.y, planePosition.z);
     // plane.rotation.set(...rotationByCubeFace[setup.face]);
     // plane.parent = setup.parent;
     // setup.parent.children.push(plane);
@@ -440,5 +440,10 @@ export default class Block {
   toggleDisabled(value: boolean) {
     this.disabled = value;
     this.connectionLineMaterial.opacity = value ? 0 : 1;
+  }
+
+  updateMeshPosiiton() {
+    const newPosition = calculateLocalPosition(this.row, this.column);
+    this.mesh.position.set(newPosition.x, newPosition.y, newPosition.z);
   }
 }

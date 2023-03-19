@@ -58,8 +58,6 @@ export default class Cube {
 
     if (!this.emitter) {
       console.warn("Emitter not found");
-    } else {
-      this.checkEletrified();
     }
   }
 
@@ -272,5 +270,11 @@ export default class Cube {
     if (restart) {
       this.checkEletrified(true);
     }
+  }
+
+  shuffleAll() {
+    cubeFaces.forEach((face) => {
+      this.grids[face]?.shuffle();
+    });
   }
 }
