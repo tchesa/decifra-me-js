@@ -23,6 +23,16 @@ import { GRID_MESH_NAME, GRID_SIZE } from "./Grid";
 import { getGlobalUp } from "./utils";
 import { clamp } from "three/src/math/MathUtils";
 
+// import stage1 from "./stages/stage1";
+// import stage2 from "./stages/stage2";
+// import stage3 from "./stages/stage3";
+// import stage4 from "./stages/stage4";
+// import stage5 from "./stages/stage5";
+// import stage6 from "./stages/stage6";
+// import stage7 from "./stages/stage7";
+// import stage8 from "./stages/stage8";
+import stage9 from "./stages/stage9";
+
 // import texture1 from "../textures/1.png";
 // import bg from "../textures/bg.jpeg";
 
@@ -72,86 +82,88 @@ window.scene.add(directionalLight);
 // });
 // const box = new Mesh(boxGeometry, boxMaterial);
 // box.scale.set(4, 4, 4);
-const cube = new Cube({
-  FRONT: [
-    [
-      { division: "LEFT_RIGHT", isEmitter: false },
-      undefined,
-      undefined,
-      undefined,
-    ],
-    [undefined, undefined, undefined, undefined],
-    [
-      { division: "LEFT_RIGHT" },
-      { division: "LEFT_RIGHT" },
-      // { division: "LEFT_RIGHT" },
-      undefined,
-      { division: "BOT_LEFT_TOP", isEmitter: true, isStatic: true },
-    ],
-    // [undefined, undefined, undefined, undefined],
-    [undefined, undefined, undefined, undefined],
-  ],
-  RIGHT: [
-    [undefined, { division: "LEFT_RIGHT" }, undefined, undefined],
-    [undefined, undefined, undefined, undefined],
-    // [
-    //   { division: "LEFT_RIGHT" },
-    //   { division: "LEFT_RIGHT" },
-    //   { division: "LEFT_RIGHT" },
-    //   { division: "BOT_LEFT_TOP", isEmitter: true },
-    // ],
-    [undefined, undefined, undefined, undefined],
-    [undefined, undefined, undefined, undefined],
-  ],
-  BACK: [
-    [undefined, undefined, { division: "LEFT_RIGHT" }, undefined],
-    [undefined, undefined, undefined, undefined],
-    [
-      { division: "LEFT_RIGHT" },
-      { division: "LEFT_RIGHT" },
-      { division: "LEFT_RIGHT" },
-      { division: "BOT_LEFT_TOP", isEmitter: true },
-    ],
-    // [undefined, undefined, undefined, undefined],
-    [undefined, undefined, undefined, undefined],
-  ],
-  LEFT: [
-    [undefined, undefined, undefined, { division: "LEFT_RIGHT" }],
-    [undefined, undefined, undefined, undefined],
-    [
-      { division: "LEFT_RIGHT" },
-      { division: "LEFT_RIGHT" },
-      { division: "LEFT_RIGHT" },
-      { division: "BOT_LEFT_TOP", isEmitter: true },
-    ],
-    // [undefined, undefined, undefined, undefined],
-    [undefined, undefined, undefined, undefined],
-  ],
-  TOP: [
-    [undefined, undefined, undefined, undefined],
-    [{ division: "LEFT_RIGHT" }, undefined, undefined, undefined],
-    [
-      { division: "LEFT_RIGHT" },
-      { division: "LEFT_RIGHT" },
-      { division: "LEFT_RIGHT" },
-      { division: "BOT_LEFT_TOP", isEmitter: true },
-    ],
-    // [undefined, undefined, undefined, undefined],
-    [undefined, undefined, undefined, undefined],
-  ],
-  BOT: [
-    [undefined, undefined, undefined, undefined],
-    [undefined, { division: "LEFT_RIGHT" }, undefined, undefined],
-    [
-      { division: "LEFT_RIGHT" },
-      { division: "LEFT_RIGHT" },
-      { division: "LEFT_RIGHT" },
-      { division: "BOT_LEFT_TOP", isEmitter: true },
-    ],
-    // [undefined, undefined, undefined, undefined],
-    [undefined, undefined, undefined, undefined],
-  ],
-});
+
+const cube = new Cube(stage9);
+// const cube = new Cube({
+//   FRONT: [
+//     [
+//       { division: "TOP_BOT_LEFT_RIGHT", isEmitter: false },
+//       undefined,
+//       undefined,
+//       undefined,
+//     ],
+//     [undefined, undefined, undefined, undefined],
+//     [
+//       { division: "LEFT_RIGHT" },
+//       { division: "LEFT_RIGHT" },
+//       // { division: "LEFT_RIGHT" },
+//       undefined,
+//       { division: "BOT_LEFT_TOP", isEmitter: true, isStatic: true },
+//     ],
+//     // [undefined, undefined, undefined, undefined],
+//     [undefined, undefined, undefined, undefined],
+//   ],
+//   RIGHT: [
+//     [undefined, { division: "TOP_BOT_LEFT_RIGHT" }, undefined, undefined],
+//     [undefined, undefined, undefined, undefined],
+//     // [
+//     //   { division: "LEFT_RIGHT" },
+//     //   { division: "LEFT_RIGHT" },
+//     //   { division: "LEFT_RIGHT" },
+//     //   { division: "BOT_LEFT_TOP", isEmitter: true },
+//     // ],
+//     [undefined, undefined, undefined, undefined],
+//     [undefined, undefined, undefined, undefined],
+//   ],
+//   BACK: [
+//     [undefined, undefined, { division: "TOP_BOT_LEFT_RIGHT" }, undefined],
+//     [undefined, undefined, undefined, undefined],
+//     [
+//       { division: "LEFT_RIGHT" },
+//       { division: "LEFT_RIGHT" },
+//       { division: "TOP_BOT_LEFT_RIGHT" },
+//       { division: "BOT_LEFT_TOP", isEmitter: false },
+//     ],
+//     // [undefined, undefined, undefined, undefined],
+//     [undefined, undefined, undefined, undefined],
+//   ],
+//   LEFT: [
+//     [undefined, undefined, undefined, { division: "TOP_BOT_LEFT_RIGHT" }],
+//     [undefined, undefined, undefined, undefined],
+//     [
+//       { division: "LEFT_RIGHT" },
+//       { division: "LEFT_RIGHT" },
+//       { division: "TOP_BOT_LEFT_RIGHT" },
+//       { division: "BOT_LEFT_TOP", isEmitter: false },
+//     ],
+//     // [undefined, undefined, undefined, undefined],
+//     [undefined, undefined, undefined, undefined],
+//   ],
+//   TOP: [
+//     [undefined, undefined, undefined, undefined],
+//     [{ division: "TOP_BOT_LEFT_RIGHT" }, undefined, undefined, undefined],
+//     [
+//       { division: "LEFT_RIGHT" },
+//       { division: "LEFT_RIGHT" },
+//       { division: "TOP_BOT_LEFT_RIGHT" },
+//       { division: "BOT_LEFT_TOP", isEmitter: false },
+//     ],
+//     // [undefined, undefined, undefined, undefined],
+//     [undefined, undefined, undefined, undefined],
+//   ],
+//   BOT: [
+//     [undefined, undefined, undefined, undefined],
+//     [undefined, { division: "TOP_BOT_LEFT_RIGHT" }, undefined, undefined],
+//     [
+//       { division: "LEFT_RIGHT" },
+//       { division: "LEFT_RIGHT" },
+//       { division: "TOP_BOT_LEFT_RIGHT" },
+//       { division: "BOT_LEFT_TOP", isEmitter: false },
+//     ],
+//     // [undefined, undefined, undefined, undefined],
+//     [undefined, undefined, undefined, undefined],
+//   ],
+// });
 
 const mousePosition = new Vector2();
 let dragging: Object3D | undefined;

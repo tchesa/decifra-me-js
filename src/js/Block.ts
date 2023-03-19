@@ -69,6 +69,31 @@ const generalEmitterMaterial = new LineBasicMaterial({ color: "red" });
 const generalLineMaterial = new LineBasicMaterial({ color: "gray" });
 const backMaskMaterial = new MeshBasicMaterial({ color: "black" });
 
+const blueLineMaterial = new LineBasicMaterial({ color: "#00b4ff" });
+const greenLineMaterial = new LineBasicMaterial({ color: "#00ff4c" });
+const orangeLineMaterial = new LineBasicMaterial({ color: "#ff7900" });
+const purpleLineMaterial = new LineBasicMaterial({ color: "#e600ff" });
+const yellowLineMaterial = new LineBasicMaterial({ color: "#fbff00" });
+
+const getColorByMaterial = (
+  color: BlockColor | undefined
+): LineBasicMaterial => {
+  switch (color) {
+    case "BLUE":
+      return blueLineMaterial;
+    case "GREEN":
+      return greenLineMaterial;
+    case "ORANGE":
+      return orangeLineMaterial;
+    case "PURPLE":
+      return purpleLineMaterial;
+    case "YELLOW":
+      return yellowLineMaterial;
+    default:
+      return generalLineMaterial;
+  }
+};
+
 export type BlockOptions = {
   division: BlockPortDivision;
   isStatic?: boolean;
@@ -140,20 +165,21 @@ export default class Block {
     this.connectionLineMaterial = new LineBasicMaterial({
       color: this.isEletrified ? "red" : "gray",
     });
+    this.outerLineMaterial = new LineBasicMaterial({ color: "gray" });
+    const borderLines = Block.drawBorders(
+      this.outerLineMaterial,
+      this.isStatic,
+      this.isEmitter,
+      this.color
+    );
+    borderLines.forEach((line) => {
+      this.mesh.add(line);
+    });
     const connectionLines = Block.drawConnectionLines(
       this.division,
       this.connectionLineMaterial
     );
     connectionLines.forEach((line) => {
-      this.mesh.add(line);
-    });
-    this.outerLineMaterial = new LineBasicMaterial({ color: "gray" });
-    const borderLines = Block.drawBorders(
-      this.outerLineMaterial,
-      this.isStatic,
-      this.isEmitter
-    );
-    borderLines.forEach((line) => {
       this.mesh.add(line);
     });
 
@@ -270,7 +296,8 @@ export default class Block {
   static drawBorders(
     outerLineMaterial: LineBasicMaterial,
     isStatic: boolean,
-    isEmitter: boolean
+    isEmitter: boolean,
+    color: BlockColor | undefined
   ): Line[] {
     const lines: Line[] = [];
     const outerBorderDistance = 0.45;
@@ -278,9 +305,8 @@ export default class Block {
     const staticBorderDistance = 0.2;
 
     const bufferGeometry = new BufferGeometry();
-    const innerLineMaterial = isEmitter
-      ? generalEmitterMaterial
-      : generalLineMaterial;
+    const innerLineMaterial =
+      isEmitter && !color ? generalEmitterMaterial : getColorByMaterial(color);
     const geometry = bufferGeometry.setFromPoints([
       new Vector3(-innerBorderDistance, -innerBorderDistance, 0),
       new Vector3(innerBorderDistance, -innerBorderDistance, 0),
@@ -289,6 +315,27 @@ export default class Block {
       new Vector3(-innerBorderDistance, -innerBorderDistance, 0),
     ]);
     lines.push(new Line(geometry, innerLineMaterial));
+
+    if (isEmitter) {
+      const emitterInnerBorderDistance = 0.25;
+
+      const geometry = new BufferGeometry().setFromPoints([
+        new Vector3(
+          -emitterInnerBorderDistance,
+          -emitterInnerBorderDistance,
+          0
+        ),
+        new Vector3(emitterInnerBorderDistance, -emitterInnerBorderDistance, 0),
+        new Vector3(emitterInnerBorderDistance, emitterInnerBorderDistance, 0),
+        new Vector3(-emitterInnerBorderDistance, emitterInnerBorderDistance, 0),
+        new Vector3(
+          -emitterInnerBorderDistance,
+          -emitterInnerBorderDistance,
+          0
+        ),
+      ]);
+      lines.push(new Line(geometry, innerLineMaterial));
+    }
 
     if (isStatic) {
       const geometry = new BufferGeometry().setFromPoints([
