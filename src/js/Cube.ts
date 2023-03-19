@@ -64,23 +64,54 @@ export default class Cube {
   setAllEletrified(value: boolean) {
     cubeFaces.forEach((face) => {
       this.grids[face]?.blockList.forEach((block) => {
-        if (!block.isEmitter || block.color) {
-          block.setEletrified(value);
+        block.setEletrified(value);
+
+        if (block.color && block.isEmitter) {
+          Block.colorBlocks[block.color].forEach((colorBlock) => {
+            if (!colorBlock.isEmitter) {
+              colorBlock.toggleDisabled(!value);
+            }
+          });
         }
       });
     });
+
+    if (!value) {
+      this.emitter?.setEletrified(true);
+    }
   }
 
-  checkEletrified() {
+  checkEletrified(keep = false) {
     // let eletrifiedCount = 1
-    this.setAllEletrified(false);
+    if (!keep) this.setAllEletrified(false);
 
     const queue: Block[] = [this.emitter!];
     const visited: { [id: string]: boolean } = {
       [this.emitter!.mesh.uuid]: true,
     };
+    let restart = false;
 
-    while (queue.length > 0) {
+    const eletrifyBlock = (block: Block) => {
+      if (block.color && block.isEmitter && !block.isEletrified) {
+        restart = true;
+      }
+
+      block.setEletrified(true);
+      // eletrifiedCount++
+
+      if (block.color && block.isEmitter) {
+        Block.colorBlocks[block.color].forEach((colorBlock) => {
+          if (!colorBlock.isEmitter) {
+            colorBlock.toggleDisabled(false);
+          }
+        });
+      }
+
+      visited[block.mesh.uuid] = true;
+      queue.push(block);
+    };
+
+    while (!restart && queue.length > 0) {
       const [current] = queue.splice(0, 1);
 
       // top
@@ -113,13 +144,11 @@ export default class Cube {
 
         if (
           topBlock &&
+          !topBlock.disabled &&
           !visited[topBlock.mesh.uuid] &&
           neighbourAllowedDivisions.includes(topBlock.division)
         ) {
-          topBlock.setEletrified(true);
-          // eletrifiedCount++
-          visited[topBlock.mesh.uuid] = true;
-          queue.push(topBlock);
+          eletrifyBlock(topBlock);
         }
       }
 
@@ -153,13 +182,11 @@ export default class Cube {
 
         if (
           botBlock &&
+          !botBlock.disabled &&
           !visited[botBlock.mesh.uuid] &&
           neighbourAllowedDivisions.includes(botBlock.division)
         ) {
-          botBlock.setEletrified(true);
-          // eletrifiedCount++
-          visited[botBlock.mesh.uuid] = true;
-          queue.push(botBlock);
+          eletrifyBlock(botBlock);
         }
       }
 
@@ -193,13 +220,11 @@ export default class Cube {
 
         if (
           leftBlock &&
+          !leftBlock.disabled &&
           !visited[leftBlock.mesh.uuid] &&
           neighbourAllowedDivisions.includes(leftBlock.division)
         ) {
-          leftBlock.setEletrified(true);
-          // eletrifiedCount++
-          visited[leftBlock.mesh.uuid] = true;
-          queue.push(leftBlock);
+          eletrifyBlock(leftBlock);
         }
       }
 
@@ -233,15 +258,17 @@ export default class Cube {
 
         if (
           rightBlock &&
+          !rightBlock.disabled &&
           !visited[rightBlock.mesh.uuid] &&
           neighbourAllowedDivisions.includes(rightBlock.division)
         ) {
-          rightBlock.setEletrified(true);
-          // eletrifiedCount++
-          visited[rightBlock.mesh.uuid] = true;
-          queue.push(rightBlock);
+          eletrifyBlock(rightBlock);
         }
       }
+    }
+
+    if (restart) {
+      this.checkEletrified(true);
     }
   }
 }

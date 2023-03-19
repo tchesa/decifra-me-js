@@ -118,8 +118,16 @@ export default class Block {
   column: number;
   grid: Grid;
   static map: { [uuid: string]: Block } = {};
+  static colorBlocks: { [color in BlockColor]: Block[] } = {
+    BLUE: [],
+    GREEN: [],
+    ORANGE: [],
+    PURPLE: [],
+    YELLOW: [],
+  };
   private outerLineMaterial: LineBasicMaterial;
   private connectionLineMaterial: LineBasicMaterial;
+  disabled: boolean;
 
   constructor(setup: BlockSetup) {
     const planeGeometry = new PlaneGeometry();
@@ -155,8 +163,14 @@ export default class Block {
     this.isStatic = setup.isStatic || false;
     this.isEmitter = setup.isEmitter || false;
     this.color = setup.color;
+
+    if (this.color) {
+      Block.colorBlocks[this.color].push(this);
+    }
+
     this.grid = setup.grid;
     this.isEletrified = Boolean(setup.isEmitter && !setup.color);
+    this.disabled = Boolean(setup.color && !setup.isEmitter);
 
     if (this.isEmitter && !this.color) {
       this.grid.cube.emitter = this;
@@ -164,6 +178,8 @@ export default class Block {
 
     this.connectionLineMaterial = new LineBasicMaterial({
       color: this.isEletrified ? "red" : "gray",
+      transparent: true,
+      opacity: this.disabled ? 0 : 1,
     });
     this.outerLineMaterial = new LineBasicMaterial({ color: "gray" });
     const borderLines = Block.drawBorders(
@@ -419,5 +435,10 @@ export default class Block {
   setEletrified(value: boolean) {
     this.isEletrified = value;
     this.connectionLineMaterial.color.set(value ? "red" : "gray");
+  }
+
+  toggleDisabled(value: boolean) {
+    this.disabled = value;
+    this.connectionLineMaterial.opacity = value ? 0 : 1;
   }
 }
