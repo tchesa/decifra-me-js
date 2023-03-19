@@ -7,7 +7,11 @@ import {
   PlaneGeometry,
   Vector3,
 } from "three";
-import { PositionAnimation } from "./Animation";
+import {
+  OpacityAnimation,
+  PositionAnimation,
+  ScaleAnimation,
+} from "./Animation";
 import Grid, { GRID_SIZE } from "./Grid";
 
 export type BlockPortDivision =
@@ -70,11 +74,19 @@ const generalEmitterMaterial = new LineBasicMaterial({ color: "red" });
 const generalLineMaterial = new LineBasicMaterial({ color: "gray" });
 const backMaskMaterial = new MeshBasicMaterial({ color: "black" });
 
-const blueLineMaterial = new LineBasicMaterial({ color: "#00b4ff" });
-const greenLineMaterial = new LineBasicMaterial({ color: "#00ff4c" });
-const orangeLineMaterial = new LineBasicMaterial({ color: "#ff7900" });
-const purpleLineMaterial = new LineBasicMaterial({ color: "#e600ff" });
-const yellowLineMaterial = new LineBasicMaterial({ color: "#fbff00" });
+const hexColors: { [color in BlockColor]: string } = {
+  BLUE: "#00b4ff",
+  GREEN: "#00ff4c",
+  ORANGE: "#ff7900",
+  PURPLE: "#e600ff",
+  YELLOW: "#fbff00",
+};
+
+const blueLineMaterial = new LineBasicMaterial({ color: hexColors.BLUE });
+const greenLineMaterial = new LineBasicMaterial({ color: hexColors.GREEN });
+const orangeLineMaterial = new LineBasicMaterial({ color: hexColors.ORANGE });
+const purpleLineMaterial = new LineBasicMaterial({ color: hexColors.PURPLE });
+const yellowLineMaterial = new LineBasicMaterial({ color: hexColors.YELLOW });
 
 const getColorByMaterial = (
   color: BlockColor | undefined
@@ -93,6 +105,19 @@ const getColorByMaterial = (
     default:
       return generalLineMaterial;
   }
+};
+
+const generateAnimatedLineEmitterMaterial = (
+  color: BlockColor | undefined
+): LineBasicMaterial => {
+  if (color) {
+    return new LineBasicMaterial({
+      color: hexColors[color],
+      transparent: true,
+    });
+  }
+
+  return new LineBasicMaterial({ color: "red", transparent: true });
 };
 
 export type BlockOptions = {
@@ -132,6 +157,10 @@ export default class Block {
   private outerLineMaterial: LineBasicMaterial;
   private connectionLineMaterial: LineBasicMaterial;
   disabled: boolean;
+  private animatedEmitterLine: Line | undefined;
+  private animatedEmitterLineAnimation: number | undefined;
+  private animatedEmitterLineMaterial: LineBasicMaterial | undefined;
+  private animatedEmitterLineMaterialAnimation: number | undefined;
 
   constructor(setup: BlockSetup) {
     const planeGeometry = new PlaneGeometry();
@@ -170,7 +199,7 @@ export default class Block {
     }
 
     this.grid = setup.grid;
-    this.isEletrified = Boolean(setup.isEmitter && !setup.color);
+    this.isEletrified = false;
     this.disabled = Boolean(setup.color && !setup.isEmitter);
 
     if (this.isEmitter && !this.color) {
@@ -183,12 +212,10 @@ export default class Block {
       opacity: this.disabled ? 0 : 1,
     });
     this.outerLineMaterial = new LineBasicMaterial({ color: "gray" });
-    const borderLines = Block.drawBorders(
-      this.outerLineMaterial,
-      this.isStatic,
-      this.isEmitter,
-      this.color
-    );
+    this.animatedEmitterLineMaterial = this.isEmitter
+      ? generateAnimatedLineEmitterMaterial(this.color)
+      : undefined;
+    const borderLines = this.drawBorders();
     borderLines.forEach((line) => {
       this.mesh.add(line);
     });
@@ -322,12 +349,7 @@ export default class Block {
     return lines;
   }
 
-  static drawBorders(
-    outerLineMaterial: LineBasicMaterial,
-    isStatic: boolean,
-    isEmitter: boolean,
-    color: BlockColor | undefined
-  ): Line[] {
+  drawBorders(): Line[] {
     const lines: Line[] = [];
     const outerBorderDistance = 0.45;
     const innerBorderDistance = 0.2;
@@ -335,7 +357,9 @@ export default class Block {
 
     const bufferGeometry = new BufferGeometry();
     const innerLineMaterial =
-      isEmitter && !color ? generalEmitterMaterial : getColorByMaterial(color);
+      this.isEmitter && !this.color
+        ? generalEmitterMaterial
+        : getColorByMaterial(this.color);
     const geometry = bufferGeometry.setFromPoints([
       new Vector3(-innerBorderDistance, -innerBorderDistance, 0),
       new Vector3(innerBorderDistance, -innerBorderDistance, 0),
@@ -345,28 +369,20 @@ export default class Block {
     ]);
     lines.push(new Line(geometry, innerLineMaterial));
 
-    if (isEmitter) {
-      const emitterInnerBorderDistance = 0.25;
-
+    if (this.isEmitter) {
       const geometry = new BufferGeometry().setFromPoints([
-        new Vector3(
-          -emitterInnerBorderDistance,
-          -emitterInnerBorderDistance,
-          0
-        ),
-        new Vector3(emitterInnerBorderDistance, -emitterInnerBorderDistance, 0),
-        new Vector3(emitterInnerBorderDistance, emitterInnerBorderDistance, 0),
-        new Vector3(-emitterInnerBorderDistance, emitterInnerBorderDistance, 0),
-        new Vector3(
-          -emitterInnerBorderDistance,
-          -emitterInnerBorderDistance,
-          0
-        ),
+        new Vector3(-innerBorderDistance, -innerBorderDistance, 0),
+        new Vector3(innerBorderDistance, -innerBorderDistance, 0),
+        new Vector3(innerBorderDistance, innerBorderDistance, 0),
+        new Vector3(-innerBorderDistance, innerBorderDistance, 0),
+        new Vector3(-innerBorderDistance, -innerBorderDistance, 0),
       ]);
-      lines.push(new Line(geometry, innerLineMaterial));
+      const line = new Line(geometry, this.animatedEmitterLineMaterial);
+      this.animatedEmitterLine = line;
+      lines.push(line);
     }
 
-    if (isStatic) {
+    if (this.isStatic) {
       const geometry = new BufferGeometry().setFromPoints([
         new Vector3(
           -outerBorderDistance,
@@ -435,7 +451,7 @@ export default class Block {
         new Vector3(-outerBorderDistance, outerBorderDistance, 0),
         new Vector3(-outerBorderDistance, -outerBorderDistance, 0),
       ]);
-      lines.push(new Line(geometry, outerLineMaterial));
+      lines.push(new Line(geometry, this.outerLineMaterial));
     }
 
     return lines;
@@ -446,8 +462,46 @@ export default class Block {
   }
 
   setEletrified(value: boolean) {
+    const wasEletrified = this.isEletrified;
     this.isEletrified = value;
     this.connectionLineMaterial.color.set(value ? "red" : "gray");
+
+    if (this.isEmitter) {
+      if (value && !wasEletrified) {
+        this.animatedEmitterLine?.scale.set(1, 1, 1);
+        const scaleAnimation = new ScaleAnimation(
+          this.animatedEmitterLine!,
+          new Vector3(1.75, 1.75, 1.75),
+          750,
+          "easeOutCubic",
+          true
+        );
+        if (this.animatedEmitterLineMaterial)
+          this.animatedEmitterLineMaterial.opacity = 1;
+        const opacityAnimation = new OpacityAnimation(
+          this.animatedEmitterLineMaterial!,
+          0,
+          750,
+          "linear",
+          true
+        );
+
+        this.animatedEmitterLineAnimation = scaleAnimation.id;
+        this.animatedEmitterLineMaterialAnimation = opacityAnimation.id;
+        window.animations.push(scaleAnimation, opacityAnimation);
+      } else if (this.color && !value && wasEletrified) {
+        window.animations.forEach((animation) => {
+          if (
+            animation.id === this.animatedEmitterLineAnimation ||
+            animation.id === this.animatedEmitterLineMaterialAnimation
+          ) {
+            animation.loop = false;
+          }
+        });
+        this.animatedEmitterLineAnimation = undefined;
+        this.animatedEmitterLineMaterialAnimation = undefined;
+      }
+    }
   }
 
   toggleDisabled(value: boolean) {

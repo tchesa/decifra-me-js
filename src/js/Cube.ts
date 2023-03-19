@@ -58,13 +58,15 @@ export default class Cube {
 
     if (!this.emitter) {
       console.warn("Emitter not found");
+    } else {
+      this.emitter.setEletrified(true);
     }
   }
 
   setAllEletrified(value: boolean) {
     cubeFaces.forEach((face) => {
       this.grids[face]?.blockList.forEach((block) => {
-        block.setEletrified(value);
+        if (!block.isEmitter || block.color) block.setEletrified(value);
 
         if (block.color && block.isEmitter) {
           Block.colorBlocks[block.color].forEach((colorBlock) => {
@@ -75,10 +77,6 @@ export default class Cube {
         }
       });
     });
-
-    if (!value) {
-      this.emitter?.setEletrified(true);
-    }
   }
 
   checkEletrified(keep = false) {

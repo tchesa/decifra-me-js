@@ -122,6 +122,7 @@ export default class Grid {
 
   shuffle() {
     const nonStaticBlocks = this.blockList.filter((block) => !block.isStatic);
+    if (nonStaticBlocks.length === 0) return;
 
     for (let i = 0; i < SHUFFLE_ITERACTIONS; i++) {
       const block =

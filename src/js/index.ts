@@ -22,16 +22,16 @@ import Block, { BLOCK_MESH_NAME } from "./Block";
 import { GRID_MESH_NAME, GRID_SIZE } from "./Grid";
 import { getGlobalUp } from "./utils";
 import { clamp } from "three/src/math/MathUtils";
+import { RotationAnimation } from "./Animation";
 
 // import stage from "./stages/stage1";
 // import stage from "./stages/stage2";
 // import stage from "./stages/stage3";
 // import stage from "./stages/stage4";
-import stage from "./stages/stage5";
-import { RotationAnimation } from "./Animation";
+// import stage from "./stages/stage5";
 // import stage from "./stages/stage6";
 // import stage from "./stages/stage7";
-// import stage from "./stages/stage8";
+import stage from "./stages/stage8";
 // import stage from "./stages/stage9";
 
 // import texture1 from "../textures/1.png";
@@ -439,6 +439,7 @@ if (
 function animate(time: number) {
   window.time = time;
 
+  // console.log(window.animations);
   window.animations = (window.animations || []).filter(
     (animation) => !animation.run(time)
   );
