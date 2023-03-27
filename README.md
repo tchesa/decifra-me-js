@@ -1,7 +1,8 @@
 # decifra-me-js
 A javascript implementation of a puzzle game.
 
-> Check out decifra-me's [original Unity implementation](https://github.com/tchesa/decifra-me-unity).
+## Preview:
+https://clever-crumble-85e001.netlify.app/
 
 ## How to run
 - `npm i`
@@ -9,3 +10,5 @@ A javascript implementation of a puzzle game.
 
 ## Build
 - `npm run build`
+
+> Check out decifra-me's [original Unity implementation](https://github.com/tchesa/decifra-me-unity).
