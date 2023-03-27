@@ -519,4 +519,15 @@ export default class Block {
     const newPosition = calculateLocalPosition(this.row, this.column);
     this.mesh.position.set(newPosition.x, newPosition.y, newPosition.z);
   }
+
+  static clearAll() {
+    Block.map = {};
+    Block.colorBlocks = {
+      BLUE: [],
+      GREEN: [],
+      ORANGE: [],
+      PURPLE: [],
+      YELLOW: [],
+    };
+  }
 }

@@ -81,7 +81,7 @@ export default class Cube {
   }
 
   checkEletrified(keep = false) {
-    // let eletrifiedCount = 1
+    let eletrifiedCount = 1;
     if (!keep) this.setAllEletrified(false);
 
     const queue: Block[] = [this.emitter!];
@@ -96,7 +96,7 @@ export default class Cube {
       }
 
       block.setEletrified(true);
-      // eletrifiedCount++
+      eletrifiedCount++;
 
       if (block.color && block.isEmitter) {
         Block.colorBlocks[block.color].forEach((colorBlock) => {
@@ -269,6 +269,8 @@ export default class Cube {
     if (restart) {
       this.checkEletrified(true);
     }
+
+    return eletrifiedCount;
   }
 
   shuffleAll() {

@@ -1,4 +1,40 @@
+@font-face {
+  font-family: Hyperspace;
+  src: url(../font/hyperspace/Hyperspace.otf);
+  font-weight: 400;
+}
+
 body {
   margin: 0;
+  font-family: Hyperspace, monospace;
   /* background-color: black; */
+}
+
+.stage-list {
+  position: absolute;
+  left: 0;
+  top: 0;
+  list-style: none;
+}
+
+.stage-list button {
+  font-family: Hyperspace, monospace;
+  background-color: transparent;
+  border: 1px solid gray;
+  color: gray;
+  font-size: 2.5vh;
+  margin: 2px;
+}
+
+.stage-list button:hover {
+  color: white;
+  border-color: white;
+}
+
+#blocks-left {
+  position: absolute;
+  right: 40px;
+  top: 16px;
+  font-size: 2.5vh;
+  color: gray;
 }

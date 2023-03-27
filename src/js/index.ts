@@ -1,6 +1,5 @@
 import {
   BufferGeometry,
-  DirectionalLight,
   Euler,
   Line,
   LineBasicMaterial,
@@ -17,25 +16,34 @@ import {
   WebGLRenderer,
 } from "three";
 // import * as dat from "dat.gui";
-import Cube, { CUBE_MESH_NAME } from "./Cube";
+import Cube, { CubeSetup, CUBE_MESH_NAME } from "./Cube";
 import Block, { BLOCK_MESH_NAME } from "./Block";
 import { GRID_MESH_NAME, GRID_SIZE } from "./Grid";
 import { getGlobalUp } from "./utils";
 import { clamp } from "three/src/math/MathUtils";
 import { RotationAnimation } from "./Animation";
 
-// import stage from "./stages/stage1";
-// import stage from "./stages/stage2";
-// import stage from "./stages/stage3";
-// import stage from "./stages/stage4";
-// import stage from "./stages/stage5";
-// import stage from "./stages/stage6";
-// import stage from "./stages/stage7";
-import stage from "./stages/stage8";
-// import stage from "./stages/stage9";
+import stage1 from "./stages/stage1";
+import stage2 from "./stages/stage2";
+import stage3 from "./stages/stage3";
+import stage4 from "./stages/stage4";
+import stage5 from "./stages/stage5";
+import stage6 from "./stages/stage6";
+import stage7 from "./stages/stage7";
+import stage8 from "./stages/stage8";
+import stage9 from "./stages/stage9";
 
-// import texture1 from "../textures/1.png";
-// import bg from "../textures/bg.jpeg";
+const stages: CubeSetup[] = [
+  stage1,
+  stage2,
+  stage3,
+  stage4,
+  stage5,
+  stage6,
+  stage7,
+  stage8,
+  stage9,
+];
 
 const renderer = new WebGLRenderer();
 renderer.shadowMap.enabled = true;
@@ -48,12 +56,6 @@ window.scene = new Scene();
 window.animations = [];
 window.time = 0;
 
-// const camera = new PerspectiveCamera(
-//   75,
-//   window.innerWidth / window.innerHeight,
-//   0.1,
-//   1000
-// );
 const camera = new OrthographicCamera(
   -5,
   5,
@@ -65,110 +67,28 @@ const camera = new OrthographicCamera(
 camera.rotateZ(Math.PI / 4);
 camera.position.z = 5;
 
-// const textureLoader = new TextureLoader();
-
-// const orbit = new OrbitControls(camera, renderer.domElement);
-// orbit.update();
-
-// const axesHelper = new AxesHelper(5);
-// window.scene.add(axesHelper);
+const $blocksLeft = document.createElement("span");
+$blocksLeft.id = "blocks-left";
+$blocksLeft.innerHTML = `Blocks left: --`;
+document.body.appendChild($blocksLeft);
 
 // directional light
-const directionalLight = new DirectionalLight("white", 0.5);
-directionalLight.position.set(0, 0, 1);
-window.scene.add(directionalLight);
+// const directionalLight = new DirectionalLight("white", 0.5);
+// directionalLight.position.set(0, 0, 1);
+// window.scene.add(directionalLight);
 
-// const boxGeometry = new BoxGeometry();
-// const boxMaterial = new MeshStandardMaterial({
-//   color: "white",
-//   // map: textureLoader.load(texture1),
-// });
-// const box = new Mesh(boxGeometry, boxMaterial);
-// box.scale.set(4, 4, 4);
-
-const cube = new Cube(stage);
+let cube = new Cube(stage1);
 cube.shuffleAll();
-cube.checkEletrified();
-// const cube = new Cube({
-//   FRONT: [
-//     [
-//       { division: "TOP_BOT_LEFT_RIGHT", isEmitter: false },
-//       undefined,
-//       undefined,
-//       undefined,
-//     ],
-//     [undefined, undefined, undefined, undefined],
-//     [
-//       { division: "LEFT_RIGHT" },
-//       { division: "LEFT_RIGHT" },
-//       // { division: "LEFT_RIGHT" },
-//       undefined,
-//       { division: "BOT_LEFT_TOP", isEmitter: true, isStatic: true },
-//     ],
-//     // [undefined, undefined, undefined, undefined],
-//     [undefined, undefined, undefined, undefined],
-//   ],
-//   RIGHT: [
-//     [undefined, { division: "TOP_BOT_LEFT_RIGHT" }, undefined, undefined],
-//     [undefined, undefined, undefined, undefined],
-//     // [
-//     //   { division: "LEFT_RIGHT" },
-//     //   { division: "LEFT_RIGHT" },
-//     //   { division: "LEFT_RIGHT" },
-//     //   { division: "BOT_LEFT_TOP", isEmitter: true },
-//     // ],
-//     [undefined, undefined, undefined, undefined],
-//     [undefined, undefined, undefined, undefined],
-//   ],
-//   BACK: [
-//     [undefined, undefined, { division: "TOP_BOT_LEFT_RIGHT" }, undefined],
-//     [undefined, undefined, undefined, undefined],
-//     [
-//       { division: "LEFT_RIGHT" },
-//       { division: "LEFT_RIGHT" },
-//       { division: "TOP_BOT_LEFT_RIGHT" },
-//       { division: "BOT_LEFT_TOP", isEmitter: false },
-//     ],
-//     // [undefined, undefined, undefined, undefined],
-//     [undefined, undefined, undefined, undefined],
-//   ],
-//   LEFT: [
-//     [undefined, undefined, undefined, { division: "TOP_BOT_LEFT_RIGHT" }],
-//     [undefined, undefined, undefined, undefined],
-//     [
-//       { division: "LEFT_RIGHT" },
-//       { division: "LEFT_RIGHT" },
-//       { division: "TOP_BOT_LEFT_RIGHT" },
-//       { division: "BOT_LEFT_TOP", isEmitter: false },
-//     ],
-//     // [undefined, undefined, undefined, undefined],
-//     [undefined, undefined, undefined, undefined],
-//   ],
-//   TOP: [
-//     [undefined, undefined, undefined, undefined],
-//     [{ division: "TOP_BOT_LEFT_RIGHT" }, undefined, undefined, undefined],
-//     [
-//       { division: "LEFT_RIGHT" },
-//       { division: "LEFT_RIGHT" },
-//       { division: "TOP_BOT_LEFT_RIGHT" },
-//       { division: "BOT_LEFT_TOP", isEmitter: false },
-//     ],
-//     // [undefined, undefined, undefined, undefined],
-//     [undefined, undefined, undefined, undefined],
-//   ],
-//   BOT: [
-//     [undefined, undefined, undefined, undefined],
-//     [undefined, { division: "TOP_BOT_LEFT_RIGHT" }, undefined, undefined],
-//     [
-//       { division: "LEFT_RIGHT" },
-//       { division: "LEFT_RIGHT" },
-//       { division: "TOP_BOT_LEFT_RIGHT" },
-//       { division: "BOT_LEFT_TOP", isEmitter: false },
-//     ],
-//     // [undefined, undefined, undefined, undefined],
-//     [undefined, undefined, undefined, undefined],
-//   ],
-// });
+
+const updateBlocksLeft = (eletrifiedCount: number) => {
+  const blocksLeft = cube.blockCount - eletrifiedCount;
+
+  const formattedNumber = blocksLeft >= 10 ? `${blocksLeft}` : `0${blocksLeft}`;
+
+  $blocksLeft.innerHTML = `Blocks left: ${formattedNumber}`;
+};
+
+updateBlocksLeft(cube.checkEletrified());
 
 const mousePosition = new Vector2();
 let dragging: Object3D | undefined;
@@ -263,6 +183,13 @@ window.addEventListener("mousedown", function () {
   //   } block(s) detected`
   // );
 
+  const allowRotate =
+    cube.grids.RIGHT ||
+    cube.grids.LEFT ||
+    cube.grids.TOP ||
+    cube.grids.BOT ||
+    cube.grids.BACK;
+
   const blockIntersection = intersects.find(
     (intersect) => intersect.object.name === BLOCK_MESH_NAME
   );
@@ -310,7 +237,7 @@ window.addEventListener("mousedown", function () {
         0
       );
     }
-  } else if (triangleIntersection) {
+  } else if (triangleIntersection && allowRotate) {
     const hit = triangleIntersection.point;
     rotating = true;
     verticalRotation = triangleIntersection.object.name === Triangle.VERTICAL;
@@ -332,7 +259,7 @@ window.addEventListener("mouseup", function () {
     //   Block.map[dragging!.uuid].column
     // );
     // console.log(a, b, c, d);
-    cube.checkEletrified();
+    updateBlocksLeft(cube.checkEletrified());
   } else if (rotating) {
     // cube.mesh.rotation.set(
     //   (Math.round((cube.mesh.rotation.x / Math.PI) * 2) / 2) * Math.PI,
@@ -382,59 +309,51 @@ enum Triangle {
   VERTICAL = "TRIANGLE_VERTICAL",
 }
 
-if (
-  cube.grids.RIGHT ||
-  cube.grids.LEFT ||
-  cube.grids.TOP ||
-  cube.grids.BOT ||
-  cube.grids.BACK
-) {
-  const rightTriangleShape = new Shape();
-  rightTriangleShape.moveTo(0, 0);
-  rightTriangleShape.lineTo(2 * triangleScale, -2 * triangleScale);
-  rightTriangleShape.lineTo(2 * triangleScale, 2 * triangleScale);
+const rightTriangleShape = new Shape();
+rightTriangleShape.moveTo(0, 0);
+rightTriangleShape.lineTo(2 * triangleScale, -2 * triangleScale);
+rightTriangleShape.lineTo(2 * triangleScale, 2 * triangleScale);
 
-  const rightTriangleGeometry = new ShapeGeometry(rightTriangleShape);
-  const triangleMaterial = new MeshBasicMaterial({
-    color: "pink",
-    wireframe: true,
-    transparent: true,
-    opacity: 0,
-  });
-  const rightTriangle = new Mesh(rightTriangleGeometry, triangleMaterial);
-  rightTriangle.name = Triangle.HORIZONTAL;
-  window.scene.add(rightTriangle);
+const rightTriangleGeometry = new ShapeGeometry(rightTriangleShape);
+const triangleMaterial = new MeshBasicMaterial({
+  color: "pink",
+  wireframe: true,
+  transparent: true,
+  opacity: 0,
+});
+const rightTriangle = new Mesh(rightTriangleGeometry, triangleMaterial);
+rightTriangle.name = Triangle.HORIZONTAL;
+window.scene.add(rightTriangle);
 
-  const leftTriangleShape = new Shape();
-  leftTriangleShape.moveTo(0, 0);
-  leftTriangleShape.lineTo(-2 * triangleScale, -2 * triangleScale);
-  leftTriangleShape.lineTo(-2 * triangleScale, 2 * triangleScale);
+const leftTriangleShape = new Shape();
+leftTriangleShape.moveTo(0, 0);
+leftTriangleShape.lineTo(-2 * triangleScale, -2 * triangleScale);
+leftTriangleShape.lineTo(-2 * triangleScale, 2 * triangleScale);
 
-  const leftTriangleGeometry = new ShapeGeometry(leftTriangleShape);
-  const leftTriangle = new Mesh(leftTriangleGeometry, triangleMaterial);
-  leftTriangle.name = Triangle.HORIZONTAL;
-  window.scene.add(leftTriangle);
+const leftTriangleGeometry = new ShapeGeometry(leftTriangleShape);
+const leftTriangle = new Mesh(leftTriangleGeometry, triangleMaterial);
+leftTriangle.name = Triangle.HORIZONTAL;
+window.scene.add(leftTriangle);
 
-  const topTriangleShape = new Shape();
-  topTriangleShape.moveTo(0, 0);
-  topTriangleShape.lineTo(2 * triangleScale, 2 * triangleScale);
-  topTriangleShape.lineTo(-2 * triangleScale, 2 * triangleScale);
+const topTriangleShape = new Shape();
+topTriangleShape.moveTo(0, 0);
+topTriangleShape.lineTo(2 * triangleScale, 2 * triangleScale);
+topTriangleShape.lineTo(-2 * triangleScale, 2 * triangleScale);
 
-  const topTriangleGeometry = new ShapeGeometry(topTriangleShape);
-  const topTriangle = new Mesh(topTriangleGeometry, triangleMaterial);
-  topTriangle.name = Triangle.VERTICAL;
-  window.scene.add(topTriangle);
+const topTriangleGeometry = new ShapeGeometry(topTriangleShape);
+const topTriangle = new Mesh(topTriangleGeometry, triangleMaterial);
+topTriangle.name = Triangle.VERTICAL;
+window.scene.add(topTriangle);
 
-  const bottomTriangleShape = new Shape();
-  bottomTriangleShape.moveTo(0, 0);
-  bottomTriangleShape.lineTo(2 * triangleScale, -2 * triangleScale);
-  bottomTriangleShape.lineTo(-2 * triangleScale, -2 * triangleScale);
+const bottomTriangleShape = new Shape();
+bottomTriangleShape.moveTo(0, 0);
+bottomTriangleShape.lineTo(2 * triangleScale, -2 * triangleScale);
+bottomTriangleShape.lineTo(-2 * triangleScale, -2 * triangleScale);
 
-  const bottomTriangleGeometry = new ShapeGeometry(bottomTriangleShape);
-  const bottomTriangle = new Mesh(bottomTriangleGeometry, triangleMaterial);
-  bottomTriangle.name = Triangle.VERTICAL;
-  window.scene.add(bottomTriangle);
-}
+const bottomTriangleGeometry = new ShapeGeometry(bottomTriangleShape);
+const bottomTriangle = new Mesh(bottomTriangleGeometry, triangleMaterial);
+bottomTriangle.name = Triangle.VERTICAL;
+window.scene.add(bottomTriangle);
 
 function animate(time: number) {
   window.time = time;
@@ -448,6 +367,29 @@ function animate(time: number) {
 }
 
 renderer.setAnimationLoop(animate);
+
+const onSelectStage = (stage: CubeSetup) => () => {
+  Block.clearAll();
+  window.scene.remove(cube.mesh);
+  cube = new Cube(stage);
+  cube.shuffleAll();
+  updateBlocksLeft(cube.checkEletrified());
+};
+
+const $ul = document.createElement("ul");
+$ul.classList.add("stage-list");
+
+stages.forEach((stage, i) => {
+  const $li = document.createElement("li");
+  const $button = document.createElement("button");
+  $button.type = "button";
+  $button.innerHTML = `Stage ${i + 1}`;
+  $button.onclick = onSelectStage(stage);
+  $li.appendChild($button);
+  $ul.appendChild($li);
+});
+
+document.body.appendChild($ul);
 
 // const gui = new dat.GUI();
 // const options = {
