@@ -57,10 +57,10 @@ window.animations = [];
 window.time = 0;
 
 const camera = new OrthographicCamera(
-  -5,
-  5,
-  5 * (window.innerHeight / window.innerWidth),
-  -5 * (window.innerHeight / window.innerWidth),
+  -6,
+  6,
+  6 * (window.innerHeight / window.innerWidth),
+  -6 * (window.innerHeight / window.innerWidth),
   0.3,
   1000
 );
