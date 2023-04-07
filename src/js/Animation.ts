@@ -1,51 +1,15 @@
 import { Euler, Material, Object3D, Vector3 } from "three";
-
-// https://easings.net/
-type TimingFunction =
-  | "linear"
-  // | "easeInSine"
-  // | "easeOutSine"
-  // | "easeInOutSine"
-  // | "easeInQuad"
-  // | "easeOutQuad"
-  // | "easeInOutQuad"
-  // | "easeInCubic"
-  | "easeOutCubic";
-// | "easeInOutCubic"
-// | "easeInQuart"
-// | "easeOutQuart"
-// | "easeInOutQuart"
-// | "easeInQuint"
-// | "easeOutQuint"
-// | "easeInOutQuint"
-// | "easeInExpo"
-// | "easeOutExpo"
-// | "easeInOutExpo"
-// | "easeInCirc"
-// | "easeOutCirc"
-// | "easeInOutCirc"
-// | "easeInBack"
-// | "easeOutBack"
-// | "easeInOutBack"
-// | "easeInElastic"
-// | "easeOutElastic"
-// | "easeInOutElastic"
-// | "easeInBounce"
-// | "easeOutBounce"
-// | "easeInOutBounce";
-
-type EaseFunction = (x: number) => number;
-
-const linear: EaseFunction = (x) => x;
-const easeOutCubic: EaseFunction = (x) => 1 - Math.pow(1 - x, 3);
+import { linear, easeOutCubic } from "@tchesa/ease";
 
 const calculateProgress = (start: number, now: number, duration: number) =>
   (now - start) / duration;
 
-const ease: { [timingFunction in TimingFunction]: EaseFunction } = {
+const ease = {
   linear,
   easeOutCubic,
 };
+
+type TimingFunction = keyof typeof ease;
 
 export default interface Animation {
   run(time: number): boolean;
