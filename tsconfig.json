@@ -1,6 +1,7 @@
 {
   "include": [
-    "./src/js/index.ts",
+    "src/js/index.ts",
+    "src/js/index.ts",
     "./src/index.d.ts"
   ],
   "compilerOptions": {

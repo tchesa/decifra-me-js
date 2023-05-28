@@ -1,19 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#F04E23" />
-    <title>decifra.me</title>
-    <link rel="stylesheet" href="style/index.css" />
-    <script type="module" src="js/index.ts"></script>
-    <style>
-      body {
-        background-color: black;
-        color: white;
-      }
-    </style>
-  </head>
-  <body></body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#F04E23" />
+  <title>decifra.me</title>
+  <link rel="stylesheet" href="style/index.css" />
+  <link rel="stylesheet" href="style/menu.css" />
+  <script type="module" src="js/index.ts"></script>
+  <script src="js/main-menu.ts"></script>
+  <style>
+    body {
+      background-color: black;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="body-screen">
+    <div class="square">
+      <div class="levels hide" id="levels">
+        <button id="level-1-btn"><span>1</span></button>
+        <button id="level-2-btn"><span>3</span></button>
+        <button id="level-3-btn"><span>6</span></button>
+        <button id="level-4-btn"><span>2</span></button>
+        <button id="level-5-btn"><span>5</span></button>
+        <button id="level-6-btn"><span>8</span></button>
+        <button id="level-7-btn"><span>4</span></button>
+        <button id="level-8-btn"><span>7</span></button>
+        <button id="level-9-btn"><span>9</span></button>
+        <button id="levels-back-btn" onclick="toggleLevels()"><span>&#60;</span></button>
+      </div>
+    </div>
+    <div class="menu-button" id="title">
+      <div class="bg">
+        <h1 class="title-ghost">decifra.me<span class="title-main">decifra.me</span></h1>
+      </div>
+    </div>
+    <div class="buttons-container">
+      <button class="menu-button" id="levels-btn" onclick="toggleLevels()">
+        <div class="bg">
+          <h1 class="title-ghost">levels<span class="title-main">levels</span></h1>
+        </div>
+      </button>
+      <button class="menu-button" id="sound-btn" onclick="toggleSound()">
+        <div class="bg">
+          <h1 class="title-ghost"><span class="text">sound: on</span><span class="title-main">sound: on</span></h1>
+        </div>
+      </button>
+      <button class="menu-button" id="credits-btn">
+        <div class="bg">
+          <h1 class="title-ghost">credits<span class="title-main">credits</span></h1>
+        </div>
+      </button>
+    </div>
+  </div>
+</body>
+
 </html>

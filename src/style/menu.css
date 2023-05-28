@@ -1,0 +1,157 @@
+.menu-button {
+  text-align: center;
+  z-index: 2;
+  position: relative;
+}
+
+.menu-button .bg {
+  background-color: gray;
+  transition: background-color 0.2s ease-in-out, height 0.2s ease-in-out;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  right: 0;
+  overflow: hidden;
+  transform: translateY(-50%);
+  height: 100%;
+}
+
+button.menu-button {
+  font: inherit;
+  display: block;
+  width: 100%;
+  border: 0 none;
+  padding: 0;
+  background-color: transparent;
+}
+
+button.menu-button:hover .bg {
+  background-color: white;
+}
+
+.menu-button .title-ghost {
+  color: gray;
+  position: relative;
+  display: inline-block;
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.menu-button .title-ghost,
+.menu-button .title-main {
+  display: inline-block;
+  padding: 0.2em;
+}
+
+.menu-button .title-main {
+  color: black;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.square {
+  width: 48vh;
+  height: 48vh;
+  border: 1px solid gray;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  z-index: 1;
+}
+
+.menu-button#title {
+  font-size: 3vh;
+  position: absolute;
+  top: 24vh;
+  left: 0;
+  right: 0;
+  height: 10vh;
+}
+
+.buttons-container {
+  width: 100%;
+  flex-direction: column;
+  gap: 4vh;
+  display: flex;
+  position: absolute;
+  top: 67vh;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+.buttons-container .menu-button {
+  font-size: 2vh;
+  height: 6vh;
+}
+.menu-button.hide {
+  pointer-events: none;
+}
+
+.menu-button.hide .bg {
+  height: 0;
+}
+
+.levels {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
+  height: 133%;
+  grid-gap: 1vh;
+  padding: 1vh;
+  box-sizing: border-box;
+  transform: rotate3d(0, 1, 0, 0deg);
+  transform-origin: center center 24vh;
+  -webkit-transition: -webkit-transform 0.5s ease-in-out,
+    opacity 0.5s ease-in-out;
+  -ms-transition: -ms-transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+.levels.hide {
+  transform: rotate3d(0, 1, 0, 90deg);
+  opacity: 0;
+}
+
+.levels button {
+  border: 1px solid gray;
+  color: gray;
+  padding: 0;
+  background-color: transparent;
+  font-family: inherit;
+  font-size: 6vh;
+  transition: border-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.levels button span {
+  transform: rotate(-45deg);
+  display: block;
+}
+
+.levels button:hover {
+  color: white;
+  border-color: white;
+}
+
+#levels-back-btn {
+  position: relative;
+  top: 0.8vh;
+  grid-column-start: 2;
+}
+
+.disabled {
+  pointer-events: none;
+}
+
+.body-screen {
+  height: 100vh;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+}

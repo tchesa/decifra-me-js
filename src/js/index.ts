@@ -376,20 +376,13 @@ const onSelectStage = (stage: CubeSetup) => () => {
   updateBlocksLeft(cube.checkEletrified());
 };
 
-const $ul = document.createElement("ul");
-$ul.classList.add("stage-list");
-
 stages.forEach((stage, i) => {
-  const $li = document.createElement("li");
-  const $button = document.createElement("button");
-  $button.type = "button";
-  $button.innerHTML = `Stage ${i + 1}`;
-  $button.onclick = onSelectStage(stage);
-  $li.appendChild($button);
-  $ul.appendChild($li);
-});
+  const $button = document.getElementById(`level-${i + 1}-btn`);
 
-document.body.appendChild($ul);
+  if ($button) {
+    $button.onclick = onSelectStage(stage);
+  }
+});
 
 // const gui = new dat.GUI();
 // const options = {
